@@ -1,0 +1,259 @@
+================================================================
+QSYS SETUP GUIDE — Radar SoC
+COE838 — FMCW Radar Range-Doppler SoC
+================================================================
+
+STEP 0: Start from the lab template
+------------------------------------
+Copy soc_system.qsys from /coe838/labs/lab3 to your project folder.
+Open it in QSys. It has the HPS block pre-configured for DE1-SoC.
+DO NOT create the HPS block from scratch.
+
+
+================================================================
+STEP 1: Add On-Chip SRAM x2 (Input and Output buffers)
+================================================================
+In QSys IP Catalog:
+  Memories and Memory Controllers > On-Chip Memory (RAM or ROM)
+
+Add Component 1 — Input SRAM:
+  Name:         input_sram_0
+  Type:         RAM
+  Data width:   32 bits
+  Total size:   65536 bytes (64 KB)  ← NR * ND * 4 = 256*64*4
+  Memory init:  None
+
+Add Component 2 — Output SRAM:
+  Name:         output_sram_0
+  Same settings as above
+
+Connections for BOTH SRAMs:
+  clk_0.clk        → sram.clk1
+  clk_0.clk_reset  → sram.reset1
+  hps_0.h2f_axi_master → sram.s1    ← HPS reads/writes via full bridge
+
+For each SRAM, also export a second port (s2) for the accelerator:
+  Double-click "s2" export field → name it:
+    input_sram_0_s2_export   (for input)
+    output_sram_0_s2_export  (for output)
+  This lets your Verilog accelerator read/write the SRAM directly.
+
+Base addresses (assign via System > Assign Base Addresses):
+  input_sram_0  → 0x00000000 on h2f bridge
+  output_sram_0 → 0x00010000 on h2f bridge
+
+
+================================================================
+STEP 2: Register avalon_ctrl_slave.v as a QSys Component
+================================================================
+(Follows Lab 4 Section 2.4.1 exactly)
+
+In QSys left pane → double-click "New Component..."
+
+[Component Type] tab:
+  Name:         radar_ctrl_slave
+  Display Name: Radar Control Slave
+
+[Files] tab:
+  + button → select avalon_ctrl_slave.v
+  Click "Analyze Synthesis Files"
+  Wait for analysis to complete
+
+[Signals] tab — verify these are correct:
+  avs_address   → interface: s0  (Avalon Slave)  type: address
+  avs_write     → interface: s0                  type: write
+  avs_read      → interface: s0                  type: read
+  avs_writedata → interface: s0                  type: writedata
+  avs_readdata  → interface: s0                  type: readdata
+  clk           → interface: clock_sink          type: clk
+  reset         → interface: reset_sink          type: reset
+
+  The conduit signals need manual classification:
+  For each of these, change interface to "New Conduit..." → conduit_end:
+    ctrl_start     → signal type: ctrl_start
+    ctrl_reset     → signal type: ctrl_reset
+    cfg_nr         → signal type: cfg_nr
+    cfg_nd         → signal type: cfg_nd
+    status_busy    → signal type: status_busy
+    status_done    → signal type: status_done
+    cycle_count    → signal type: cycle_count
+
+[Interfaces] tab:
+  - Click "Remove Interfaces With No Signals"
+  - For every interface, set "Associated Clock" = clk_0
+  - For every interface, set "Associated Reset" = clk_0_reset
+  - Rename conduit_end → "conduit" in the Name field
+
+  Click Finish → Save as radar_ctrl_slave_hw.tcl
+
+[Add to system]:
+  Highlight radar_ctrl_slave in IP catalog under Project
+  Click + Add → Finish
+
+Connections for ctrl_slave_0:
+  clk_0.clk            → ctrl_slave_0.clk
+  clk_0.clk_reset      → ctrl_slave_0.reset
+  hps_0.h2f_lw_axi_master → ctrl_slave_0.s0   ← lightweight bridge!
+
+Export the conduit:
+  Double-click export field next to ctrl_slave_0.conduit
+  Name it: ctrl_slave_0_conduit
+
+Base address:
+  ctrl_slave_0 → 0x00000000 on lightweight bridge
+
+
+================================================================
+STEP 3: Assign Base Addresses
+================================================================
+System > Assign Base Addresses
+
+Verify:
+  ctrl_slave_0  : 0x00000000  (lwh2f — becomes 0xFF200000 from HPS)
+  input_sram_0  : 0x00000000  (h2f   — becomes 0xC0000000 from HPS)
+  output_sram_0 : 0x00010000  (h2f   — becomes 0xC0010000 from HPS)
+
+If there are overlap errors, manually edit the base addresses
+in the Address Map tab until all errors clear.
+
+
+================================================================
+STEP 4: Generate HDL
+================================================================
+Generate > Generate HDL
+  Synthesis language: Verilog (NOT VHDL — we are using Verilog)
+  Output directory: ./soc_system
+
+Wait for generation to complete.
+
+Generate > Show Instantiation Template
+  Language: Verilog
+  COPY this template → use it to update the port map in radar_top.v
+  The exact conduit port names come from here.
+  Update radar_top.v port map to match exactly.
+
+
+================================================================
+STEP 5: Generate Header Files (NIOS II Shell)
+================================================================
+Tools > NIOS II Command Shell [gcc4]
+
+cd to your project directory, then:
+  sopc-create-header-files
+  mkdir software
+  mv *.h software/
+
+Open software/hps_0.h and note:
+  CTRL_SLAVE_0_BASE   → offset of ctrl slave on lw bridge
+  INPUT_SRAM_0_BASE   → offset of input SRAM on full bridge
+  OUTPUT_SRAM_0_BASE  → offset of output SRAM on full bridge
+
+These values go into main.c. Already referenced as CTRL_SLAVE_0_BASE.
+
+
+================================================================
+STEP 6: Add Files to Quartus Project
+================================================================
+Project > Add/Remove Files in Project:
+  Add: soc_system/synthesis/soc_system.qip
+  Add: hw/avalon_ctrl_slave.v
+  Add: hw/accelerator_fsm.v
+  Add: hw/fft_wrapper.v
+  Add: hw/radar_top.v
+  Add: <your_fft_ip>.qip  (from IP Catalog FFT generation)
+
+Set radar_top as top-level entity:
+  Project > Set as Top-Level Entity
+
+
+================================================================
+STEP 7: Pin Assignment TCL Scripts
+================================================================
+Tools > TCL Scripts:
+  1. Run pin_assignment_DE1-SoC.tcl
+  2. Run hps_sdram_p0_pin_assignments.tcl
+     (if listed twice — exit Quartus, restart, run again)
+
+
+================================================================
+STEP 8: Add Altera FFT IP
+================================================================
+Tools > IP Catalog > DSP > Transforms > FFT
+
+Settings:
+  Transform length:   256
+  Data precision:     Fixed point
+  Data width:         16 bits
+  Twiddle width:      16 bits
+  Architecture:       Streaming
+  I/O data flow:      Natural order output
+  Direction:          Forward only (or bidirectional)
+
+Name it: fft_256
+Save to project directory.
+Add fft_256.qip to Quartus project.
+
+Check the generated fft_256.v for exact port names and
+update fft_wrapper.v accordingly.
+
+
+================================================================
+STEP 9: Compile
+================================================================
+Processing > Start Compilation
+
+Expect:
+  - No errors (if there are errors, fix them before continuing)
+  - Many warnings (ignore most — critical path, unused pins etc)
+  - Timing report: check Fmax is above 50MHz
+
+Output: output_files/radar_top.sof
+
+
+================================================================
+STEP 10: DS-5 Software Setup
+================================================================
+Create DS-5 project (Empty Project, DS-5 GCC toolchain)
+
+Project > Properties > C/C++ Build > Settings:
+  GCC C Linker > Libraries:
+    Add: m   (math)
+    Add: rt  (realtime clock — for clock_gettime)
+
+  C/C++ General > Path and Symbols > Includes:
+    Add: /usr/local/Quartus-EDS-14.0/embedded/ip/altera/hps/altera_hps/hwlib/include
+
+Import files (via Archive):
+  main.c
+  hps_0.h  (from NIOS II shell output)
+
+Build: CTRL-B
+Copy binary from Debug/ to USB stick.
+
+================================================================
+EXECUTION ON DE1-SOC
+================================================================
+1. Program FPGA: Quartus Programmer → upload radar_top.sof
+2. Connect serial: minicom SOC-USB0  (115200 baud, login: bob/bob)
+3. Mount USB:      mount /mnt
+4. Copy binary:    cp /mnt/radar_app .
+5. Run:            ./radar_app
+
+Expected output:
+  [1] Bridges mapped OK
+  [2] Accelerator reset
+  [3] Synthetic I/Q frame generated...
+  [4] Writing input frame to FPGA SRAM...
+  [5] Starting accelerator...
+  [6] Hardware DONE
+      FPGA cycle count: XXXXX cycles
+      Wall-clock time : X.XXX ms
+  [7] Results read from FPGA output SRAM
+  [8] Running software reference...
+  === CORRECTNESS CHECK ===
+  Target 0 expected range bin: 32  HW detected: 32  [PASS]
+  All chirp peaks match SW reference: [PASS]
+  === PERFORMANCE REPORT ===
+  Speedup: X.XXx
+
+================================================================
