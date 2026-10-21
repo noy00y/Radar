@@ -1,0 +1,216 @@
+# ---------------------------------------------------------------------------
+# Hardware capture configuration: TI IWR1843BOOST + DCA1000EVM
+# EXPERIMENT: room
+#
+# RULES
+#  * Every value here must come from YOUR capture setup (mmWave Studio / SDK
+#    .cfg / DCA1000 CLI JSON) or from a verification measurement.
+#  * Unknown values stay null. scripts/process_capture.py lists what is missing
+#    and refuses to decode until the binary format is complete AND
+#    capture_format_verified is true.
+#  * Nothing here is copied from configs/simulation.yaml.
+#
+# Check completeness at any time:
+#   python scripts/process_capture.py --config configs/radar_capture.yaml --check-only
+# Check this file against the Lua scripts and the hardware limits:
+#   python scripts/check_config.py configs/radar_capture_room.yaml
+# ---------------------------------------------------------------------------
+
+# Set true only after decoding a known capture (e.g. a corner reflector at a
+# measured range) and confirming range, I/Q order and channel order.
+capture_format_verified: true
+
+adc_format:
+  data_type: complex                  # Studio "Complex 1x"
+  adc_bits: 16
+  sign_handling: int16_twos_complement   # DCA1000 data is 2's complement (Studio guide 24.3)
+  byte_order: little
+  iq_order: I_first                   # Studio "IQ Swap = I First"
+  complex_packing: two_sample_blocks  # 2-lane: [I(2k) I(2k+1) Q(2k) Q(2k+1)] int16 groups
+  channel_layout: rx_planar_per_chirp # per chirp: all samples of RX0, then RX1, RX2, RX3
+  num_rx: 4
+  num_adc_samples: 256
+  chirps_per_frame: 384               # (chirpEnd - chirpStart + 1) * numLoops = 3 TX * 128 = 384
+  num_frames: 64                # file must be exactly 33554432 bytes
+
+waveform:
+  mmwave_cfg_file: null               # configured from the Studio GUI, no SDK .cfg
+  carrier_frequency_hz: 77.0e+9       # profileCfg startFreq (NOT the centre of the sampled band)
+  chirp_slope_hz_per_s: 80.0e+12
+  idle_time_s: 160.0e-6
+  adc_start_time_s: 6.0e-6
+  ramp_end_time_s: 40.0e-6
+  adc_sample_rate_hz: 10.0e+6
+  # tx_times_conj_rx: approaching targets give NEGATIVE v_r (= dR/dt) in this
+  # package. PROVISIONAL until a reflector is moved toward the radar and the sign is confirmed.
+  mixer_convention: tx_times_conj_rx
+
+tx_schedule: [0, 1, 2]                     # single TX (Tx0), 4 virtual channels
+
+antenna:
+  # From the IWR1843BOOST guide, figure 10 (antenna diagram). Units: half wavelengths.
+  # RX1..RX4 are lambda/2 apart along x. TX positions are relative to Tx0 because the
+  # guide does not give the TX-to-RX offset; with a single TX that only adds a common phase.
+  # Tx1 is 1 lambda to the side and lambda/2 up; Tx2 is 2 lambda to the side.
+  # Left/right and up/down signs are read from the figure: confirm with a reflector at a known bearing.
+  verified: true
+  position_units: half_wavelength
+  rx_positions: [[0, 0, 0], [1, 0, 0], [2, 0, 0], [3, 0, 0]]
+  tx_positions: [[0, 0, 0], [2, 0, 1], [4, 0, 0]]
+
+# Per-virtual-channel complex calibration multipliers [[re, im], ...] in
+# virtual-channel order (TX slot major, RX minor). null = uncalibrated.
+rx_calibration: null
+platform_velocity_mps: [0.0, 0.0, 0.0]
+
+processing:
+  range_window: hann
+  doppler_window: hann
+  range_nfft: 256
+  doppler_nfft: 128
+  range_min_m: 0.5
+  range_max_m: 8.0
+  beat_band: positive
+  remove_dc: true          # removes per-chirp DC (TX leakage / ADC offset)
+
+detection:
+  guard_cells: [2, 1]
+  training_cells: [8, 4]
+  pfa: 1.0e-5
+  range_edge: shrink
+  doppler_edge: wrap
+  range_gate_bins: 2
+  doppler_gate_bins: 1
+  angle_gate_deg: 10.0
+
+stap:
+  enabled: true           # requires verified antenna geometry
+  look_angle_deg: 0.0
+  num_training: 64
+  num_guard: 3
+  loading_mode: noise_eig_relative   # no known noise level for hardware data
+  loading_value: 1.0
+  num_doppler_hypotheses: 32
+  spatial_taper: rect
+  temporal_taper: hann
+  methods: [nonadaptive, efa]
+  efa_num_bins: 3
+  pc_rank: null            # only used by a principal-components method, not in `methods`
+  exclude_known_targets: false
+  exclusion_halfwidth_bins: 3
+  cfar_guard: 2
+  cfar_training: 12
+  cfar_pfa: 1.0e-4
+  test_range_min_m: 0.5
+  test_range_max_m: 4.0
+
+max_frames: null
+allow_partial_final_frame: false
+notes: "Room bench: radar static. Training cells beyond the walls are noise-only, so STAP training is not homogeneous here; no ego-motion, so no clutter ridge."
+
+# ===========================================================================
+# studio: every mmWave Studio GUI knob NOT covered by the schema above, plus the
+# scenario the numbers were chosen for. scripts/check_config.py compares this block
+# and the schema above against lua/configure_radar.lua and lua/capture.lua.
+# If scripts/process_capture.py rejects unknown top-level keys, allow `studio`.
+# ===========================================================================
+studio:
+  experiment: room
+
+  scenario:                           # used only to validate the waveform against the environment
+    description: "2 m cube room plus about 3 m hallway behind a glass door; people walking"
+    max_scene_range_m: 4.0
+    max_target_speed_mps: 3.0
+    platform_speed_max_mps: 0.0
+
+  static_config:                      # Studio "StaticConfig" tab
+    tx_enable: [true, true, true]   
+    rx_enable: [true, true, true, true]
+    cascading_mode: single_chip
+    rf_ldo_bypass_enable: true        # REQUIRED on xWR1843BOOST (guide 3.2.1); GUI screenshot had it OFF
+    pa_ldo_ip_disable: true           # REQUIRED on xWR1843BOOST (guide 3.2.1); GUI screenshot had it OFF
+    supply_ir_drop_percent: 0
+    io_supply_v: 3.3
+    lp_adc_mode: regular
+    adc_full_scale_reduction: 0
+    per_chirp_phase_shifter: false
+    freq_limit_ghz: [77.0, 81.0]
+    cal_mon_tx_freq_limit_ghz: {low: [77.0, 77.0, 77.0], high: [81.0, 81.0, 81.0]}
+    cal_mon_tx_power_backoff: [0, 0, 0]
+    rf_device:
+      ae_direction_cpu_esm: bss_to_host
+      ae_direction_mon: bss_to_host
+      ae_disable_frame_start: false
+      ae_disable_frame_stop: false
+      bss_dig_watchdog_timer: false
+      ae_crc: crc16
+
+  data_path:                          # Studio "DataConfig" tab
+    interface: lvds
+    packet0: adc_only
+    packet1: suppress
+    cq_bits: 16
+    cq_trans_size: [132, 132, 72]
+    lane_clock: ddr
+    data_rate_mbps: 600
+    lane_format: 0
+    lanes_enabled: [1, 2]             # xWR1843 has only 2 LVDS data lanes
+    msb_first: true
+    crc: false
+    packet_end_pulse: false
+
+  profile:                            # Studio "SensorConfig" tab, profile block
+    id: 0
+    tx_start_time_s: 0.0
+    rx_gain_db: 30
+    rf_gain_target_db: 30
+    hpf1_corner_khz: 175
+    hpf2_corner_khz: 350
+    tx_power_backoff_db: [0, 0, 0]
+    tx_phase_shifter_deg: [0.0, 0.0, 0.0]
+    vco_select: vco1
+    force_vco_select: false
+    retain_tx_cal_lut: false
+    retain_rx_cal_lut: false
+    dig_gain_db: [0.0, 0.0, 0.0, 0.0]
+    dig_phase_shift_deg: [0.0, 0.0, 0.0, 0.0]
+
+  chirp:
+    profile_id: 0
+    start_idx: 0
+    end_idx: 0
+    start_freq_var_mhz: 0.0
+    freq_slope_var_mhz_per_us: 0.0
+    idle_time_var_us: 0.0
+    adc_start_var_us: 0.0
+    tx_enable: [true, true, true]
+
+  frame:
+    start_chirp: 0
+    end_chirp: 2
+    num_loops: 128
+    period_s: 0.100
+    num_frames: 64
+    trigger_delay_s: 0.0
+    dummy_chirps_end: 0
+    trigger_select: software
+
+  dynamic_power_save:                 # Studio "Enable Dynamic Power Save in Inter-chirp"
+    tx: false
+    rx: false
+    lo_dist: false
+
+  capture_card:                       # DCA1000 (Studio "Setup DCA1000")
+    device: DCA1000
+    host_ip: 192.168.33.30
+    fpga_ip: 192.168.33.180
+    fpga_mac: "12:34:56:78:90:12"
+    config_port: 4096
+    data_port: 4098
+    log_mode: raw
+    lvds_lanes: 2
+    transfer: lvds_capture
+    capture: ethernet_stream
+    data_bits: 16
+    packet_delay_us: 25
+    timeout_s: 30

@@ -1,0 +1,144 @@
+# ---------------------------------------------------------------------------
+# Default synthetic scenario: low-altitude side-looking GMTI with IWR1843-like
+# waveform parameters (77 GHz, 4 RX at lambda/2, single TX).
+#
+# This file is a COMPLETE, SELF-CONSISTENT SYNTHETIC SCENARIO. Nothing here is
+# a verified hardware setting; capture decoding uses configs/radar_capture.yaml.
+#
+# Geometry: platform 10 m above ground, moving at 8 m/s along the array axis
+# (+x), boresight +y (side-looking). Stationary ground clutter therefore has
+# slow-time frequency nu = -2 v_p u_x / lambda: a linear clutter ridge in
+# angle-Doppler space with slope beta = 2 v_p T_c / d ~ 0.58.
+# ---------------------------------------------------------------------------
+scenario_name: sidelooking_gmti_77ghz
+description: >
+  Side-looking moving platform, 4-RX ULA, 16-chirp CPI, distributed ground
+  clutter (coherent point scatterers), two ground movers in the look direction,
+  one mover outside it and one stationary discrete.
+seed: 20261012
+
+radar:
+  carrier_frequency_hz: 77.0e9        # RF at ramp start
+  chirp_slope_hz_per_s: 15.0e12       # 15 MHz/us
+  idle_time_s: 10.0e-6
+  adc_start_time_s: 6.0e-6
+  ramp_end_time_s: 60.0e-6            # chirp period T_c = 70 us
+  adc_sample_rate_hz: 10.0e6          # complex samples
+  num_adc_samples: 512                # 51.2 us sampled -> 768 MHz sampled bandwidth
+  num_chirps: 16                      # CPI length (per channel, single TX)
+  sampling: complex
+  mixer_convention: tx_times_conj_rx
+  noise_power: 1.0
+
+array:
+  position_units: half_wavelength     # relative to the sampled-band centre wavelength
+  rx_positions: [[0, 0, 0], [1, 0, 0], [2, 0, 0], [3, 0, 0]]
+  tx_positions: [[0, 0, 0]]
+  tx_schedule: [0]
+
+platform:
+  position_m: [0.0, 0.0, 10.0]
+  velocity_mps: [8.0, 0.0, 0.0]
+  yaw_deg: 0.0
+  depression_deg: 0.0
+  element_pattern_exponent: 1.0
+
+clutter:
+  enabled: true
+  num_scatterers: 4000
+  range_min_m: 12.0
+  range_max_m: 90.0
+  azimuth_min_deg: -80.0
+  azimuth_max_deg: 80.0
+  ground_height_m: 0.0
+  cnr_db: 27.0
+  range_power_exponent: 3.0
+  reflectivity: rayleigh
+
+targets:
+  # Fast mover: its Doppler coincides with SIDELOBE clutter (angle ~ -22 deg)
+  - name: mover_fast
+    range_m: 45.0
+    angle_deg: 20.0
+    height_m: 0.0
+    radial_velocity_mps: 3.0
+    snr_db: -18.0
+  # Slow mover: ~1.1 Doppler resolution cells from MAINBEAM clutter (-2.74 m/s at 20 deg)
+  - name: mover_slow
+    range_m: 62.0
+    angle_deg: 20.0
+    height_m: 0.0
+    radial_velocity_mps: -0.9
+    snr_db: -15.0
+  # Fast mover outside the look direction and outside the clutter band (|v_r| > v_p):
+  # detectable in the plain range-Doppler map, rejected by the angle-gated STAP output
+  - name: mover_offbeam
+    range_m: 30.0
+    angle_deg: -35.0
+    height_m: 0.0
+    radial_velocity_mps: 12.0
+    snr_db: -10.0
+
+stationary_reflectors:
+  - name: pole_discrete
+    range_m: 38.0
+    angle_deg: 5.0
+    height_m: 2.0
+    snr_db: 0.0
+
+processing:
+  range_window: hann
+  doppler_window: hann
+  range_nfft: null
+  doppler_nfft: 32                    # 2x zero padding in Doppler (grid only, not resolution)
+  range_min_m: 11.0
+  range_max_m: 92.0
+  beat_band: positive
+  remove_dc: false
+
+detection:
+  # Range-only CA-CFAR per Doppler column (0 Doppler training cells): on a moving
+  # platform the clutter band makes Doppler training cells non-homogeneous, so a
+  # 2-D window next to the clutter edge masks targets just outside the band.
+  guard_cells: [3, 0]
+  training_cells: [12, 0]
+  pfa: 1.0e-5
+  range_edge: shrink
+  doppler_edge: wrap
+  range_gate_bins: 3
+  doppler_gate_bins: 2
+  angle_gate_deg: 8.0
+
+stap:
+  enabled: true
+  look_angle_deg: 20.0
+  num_training: 160                   # 2.5 x D for D = 4 x 16 = 64
+  num_guard: 3
+  loading_mode: noise_relative        # loading = value x per-element noise variance of the snapshots
+  loading_value: 1.0
+  num_doppler_hypotheses: 32
+  spatial_taper: rect
+  temporal_taper: hann
+  methods: [nonadaptive, mvdr, efa, pc]
+  efa_num_bins: 3
+  pc_rank: null
+  exclude_known_targets: true
+  exclusion_halfwidth_bins: 3
+  cfar_guard: 2
+  cfar_training: 12
+  cfar_pfa: 1.0e-3
+  test_range_min_m: null
+  test_range_max_m: null
+
+monte_carlo:
+  enabled: true
+  num_trials: 40
+  target_name: mover_fast
+  target_snr_db: -30.0                # weaker than the scene target so P_D separates the methods
+  test_halfwidth_bins: 20
+  basis_halfwidth_bins: 16
+
+output:
+  save_raw: true
+  save_components: true
+  plot_dpi: 120
