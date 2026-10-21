@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "radar-stap"
+version = "0.1.0"
+description = "FMCW radar simulation, multichannel clutter modelling, STAP/GMTI and DCA1000 raw-ADC processing research pipeline"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = [
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "matplotlib>=3.7",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7", "nbformat>=5", "nbclient>=0.8", "ipykernel>=6"]
+gpu = ["cupy-cuda12x>=13"]
+
+[project.scripts]
+radar-stap-simulate = "radar_stap.cli:simulate_main"
+radar-stap-process-capture = "radar_stap.cli:process_capture_main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+markers = [
+    "slow: longer integration tests (still CPU-only, < ~1 min)",
+]
