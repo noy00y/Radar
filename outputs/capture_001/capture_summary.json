@@ -1,0 +1,3794 @@
+{
+  "input": "C:\\Users\\ozair\\Documents\\Code_Drive\\Drone\\radar\\claude_v1\\bins\\stap_capture_001_Raw_0.bin",
+  "stages": {
+    "decode": {
+      "available": true,
+      "missing": [],
+      "notes": []
+    },
+    "range": {
+      "available": true,
+      "missing": [],
+      "notes": []
+    },
+    "doppler": {
+      "available": true,
+      "missing": [],
+      "notes": []
+    },
+    "angle": {
+      "available": true,
+      "missing": [],
+      "notes": [
+        "no per-channel phase/gain calibration: angle estimates and STAP null depth are unreliable"
+      ]
+    },
+    "stap": {
+      "available": true,
+      "missing": [],
+      "notes": [
+        "platform velocity not needed by adaptive STAP; used only for interpretation"
+      ]
+    }
+  },
+  "provenance": {
+    "waveform.carrier_frequency_hz": "yaml",
+    "waveform.chirp_slope_hz_per_s": "yaml",
+    "waveform.idle_time_s": "yaml",
+    "waveform.adc_start_time_s": "yaml",
+    "waveform.ramp_end_time_s": "yaml",
+    "waveform.adc_sample_rate_hz": "yaml"
+  },
+  "decode": {
+    "num_frames": 64,
+    "bytes_total": 100663296,
+    "bytes_used": 100663296,
+    "bytes_dropped": 0,
+    "out_of_range_values": 0,
+    "full_scale_fraction": 0.0,
+    "channel_mean": [
+      [
+        22.423429489135742,
+        -8.092734336853027
+      ],
+      [
+        -11.637210845947266,
+        -15.264128684997559
+      ],
+      [
+        -5.541444301605225,
+        -3.1242740154266357
+      ],
+      [
+        -11.358603477478027,
+        7.508839130401611
+      ]
+    ],
+    "channel_rms": [
+      412.8113708496094,
+      401.54620361328125,
+      398.94036865234375,
+      429.09185791015625
+    ],
+    "warnings": []
+  },
+  "adc_format": {
+    "data_type": "complex",
+    "adc_bits": 16,
+    "sign_handling": "int16_twos_complement",
+    "byte_order": "little",
+    "iq_order": "I_first",
+    "complex_packing": "two_sample_blocks",
+    "channel_layout": "rx_planar_per_chirp",
+    "num_rx": 4,
+    "num_adc_samples": 256,
+    "chirps_per_frame": 384,
+    "num_frames": 64
+  },
+  "data_shape_frames_rx_chirps_samples": [
+    64,
+    4,
+    384,
+    256
+  ],
+  "files": [
+    "adc_diagnostics.png",
+    "range_profile.png",
+    "range_doppler_frame0.png",
+    "range_doppler_mean.png",
+    "stap_gmti_frame0.png"
+  ],
+  "range": {
+    "num_bins": 256,
+    "bin_spacing_m": 0.07319151806640625,
+    "band": "positive",
+    "strongest_bin": 10,
+    "strongest_range_m": 0.7319151806640625,
+    "noise_floor_median_db": 47.395938873291016
+  },
+  "doppler": {
+    "slow_time_interval_s": 0.0006000000000000001,
+    "velocity_resolution_mps": 0.024862093843678875,
+    "max_unambiguous_velocity_mps": 1.591174005995448,
+    "frames": [
+      {
+        "frame": 0,
+        "num_detections": 8,
+        "detections": [
+          {
+            "range_m": 0.7159585831029849,
+            "radial_velocity_mps": 0.00027590902863935956,
+            "snr_estimate_db": 15.329396919363376,
+            "angle_deg": -25.128205993789418
+          },
+          {
+            "range_m": 0.4900948031442321,
+            "radial_velocity_mps": -3.753315441401824e-05,
+            "snr_estimate_db": 11.436420507911526,
+            "angle_deg": -44.27963222599407
+          },
+          {
+            "range_m": 1.268763956711532,
+            "radial_velocity_mps": 0.00016503571845706482,
+            "snr_estimate_db": 12.317609405680848,
+            "angle_deg": 28.585005003087176
+          },
+          {
+            "range_m": 1.3630293136219578,
+            "radial_velocity_mps": 2.9278777825423313e-05,
+            "snr_estimate_db": 12.995646518023813,
+            "angle_deg": -15.056733395763294
+          },
+          {
+            "range_m": 0.5232369272714961,
+            "radial_velocity_mps": -0.15366476702592075,
+            "snr_estimate_db": 18.034223401367534,
+            "angle_deg": 12.579470300461702
+          },
+          {
+            "range_m": 3.515770273284827,
+            "radial_velocity_mps": 0.00018764378225673243,
+            "snr_estimate_db": 13.836862770542691,
+            "angle_deg": -19.83556925102607
+          },
+          {
+            "range_m": 4.785458367407217,
+            "radial_velocity_mps": 0.0003451404504493923,
+            "snr_estimate_db": 18.005563707877666,
+            "angle_deg": -4.425255028814643
+          },
+          {
+            "range_m": 6.685255408436773,
+            "radial_velocity_mps": 0.0002969500913852413,
+            "snr_estimate_db": 18.415356935165917,
+            "angle_deg": 52.802434484709956
+          }
+        ]
+      },
+      {
+        "frame": 1,
+        "num_detections": 8,
+        "detections": [
+          {
+            "range_m": 0.7158817867532671,
+            "radial_velocity_mps": 0.00018232386359625762,
+            "snr_estimate_db": 15.67732904281025,
+            "angle_deg": -25.130520929093468
+          },
+          {
+            "range_m": 0.4904686678949203,
+            "radial_velocity_mps": 7.066993727954382e-05,
+            "snr_estimate_db": 11.242332536938502,
+            "angle_deg": -44.25938810869317
+          },
+          {
+            "range_m": 1.3688699196625886,
+            "radial_velocity_mps": -0.0003588441817225717,
+            "snr_estimate_db": 11.432962218569918,
+            "angle_deg": -13.788219594480289
+          },
+          {
+            "range_m": 1.7287144257054126,
+            "radial_velocity_mps": -0.26667804370128945,
+            "snr_estimate_db": 11.425935066121951,
+            "angle_deg": -13.333408784704313
+          },
+          {
+            "range_m": 4.787275616441122,
+            "radial_velocity_mps": 0.00029943054269361867,
+            "snr_estimate_db": 17.69993495880201,
+            "angle_deg": -3.154375392878731
+          },
+          {
+            "range_m": 1.4127476391472282,
+            "radial_velocity_mps": 0.29430602444781595,
+            "snr_estimate_db": 11.02079749494793,
+            "angle_deg": 44.35064809821819
+          },
+          {
+            "range_m": 0.7437237581267879,
+            "radial_velocity_mps": -0.6407015826158365,
+            "snr_estimate_db": 15.469753282860735,
+            "angle_deg": 13.97570893073173
+          },
+          {
+            "range_m": 6.685157012499668,
+            "radial_velocity_mps": 0.0018101126872181181,
+            "snr_estimate_db": 16.035592495137255,
+            "angle_deg": 51.13582220561102
+          }
+        ]
+      },
+      {
+        "frame": 2,
+        "num_detections": 4,
+        "detections": [
+          {
+            "range_m": 0.7177021517596864,
+            "radial_velocity_mps": -0.0006816603192536704,
+            "snr_estimate_db": 15.64385280619014,
+            "angle_deg": -26.013143834207902
+          },
+          {
+            "range_m": 1.2810894443651737,
+            "radial_velocity_mps": -0.00043960208379391206,
+            "snr_estimate_db": 14.724586735781248,
+            "angle_deg": 25.257788581309075
+          },
+          {
+            "range_m": 4.7852404076711785,
+            "radial_velocity_mps": -0.00037318843351832626,
+            "snr_estimate_db": 19.568263650736757,
+            "angle_deg": -2.6970154962422956
+          },
+          {
+            "range_m": 6.679880488235556,
+            "radial_velocity_mps": 0.00011150770661016483,
+            "snr_estimate_db": 19.827617404717643,
+            "angle_deg": 52.248689305085385
+          }
+        ]
+      },
+      {
+        "frame": 3,
+        "num_detections": 6,
+        "detections": [
+          {
+            "range_m": 0.7222046147198027,
+            "radial_velocity_mps": 0.0020585549902472954,
+            "snr_estimate_db": 17.814490159338845,
+            "angle_deg": -26.12714424883249
+          },
+          {
+            "range_m": 0.4548021642226611,
+            "radial_velocity_mps": -0.0005162111943390517,
+            "snr_estimate_db": 12.098520871220451,
+            "angle_deg": -41.7665195463863
+          },
+          {
+            "range_m": 1.3682631874754376,
+            "radial_velocity_mps": 0.0005138880974165347,
+            "snr_estimate_db": 11.699946208865686,
+            "angle_deg": -12.641279495413139
+          },
+          {
+            "range_m": 1.0008950301302688,
+            "radial_velocity_mps": 0.2590046197290129,
+            "snr_estimate_db": 11.443902739949019,
+            "angle_deg": -14.310622487339602
+          },
+          {
+            "range_m": 6.680828542548336,
+            "radial_velocity_mps": 0.00028722225023565404,
+            "snr_estimate_db": 21.884373975725335,
+            "angle_deg": 51.155001360255035
+          },
+          {
+            "range_m": 4.470562367530691,
+            "radial_velocity_mps": -0.0010557379261312957,
+            "snr_estimate_db": 16.67726848015116,
+            "angle_deg": 23.317709638719144
+          }
+        ]
+      },
+      {
+        "frame": 4,
+        "num_detections": 6,
+        "detections": [
+          {
+            "range_m": 0.7096559286308832,
+            "radial_velocity_mps": 0.0002744473126355297,
+            "snr_estimate_db": 16.63664683362973,
+            "angle_deg": -26.017374639432692
+          },
+          {
+            "range_m": 1.3633043906354865,
+            "radial_velocity_mps": -5.0976219811664484e-05,
+            "snr_estimate_db": 12.00043146775557,
+            "angle_deg": -13.005344626136832
+          },
+          {
+            "range_m": 1.7848669137721587,
+            "radial_velocity_mps": -0.0023576195681149098,
+            "snr_estimate_db": 12.14116606376309,
+            "angle_deg": -32.132611023326696
+          },
+          {
+            "range_m": 2.97448113957434,
+            "radial_velocity_mps": -0.0004311169774233642,
+            "snr_estimate_db": 12.624486694811933,
+            "angle_deg": -17.811451723567593
+          },
+          {
+            "range_m": 6.681317693891699,
+            "radial_velocity_mps": -6.083127027378141e-05,
+            "snr_estimate_db": 20.35245382089517,
+            "angle_deg": 52.27601419706883
+          },
+          {
+            "range_m": 4.487205976048853,
+            "radial_velocity_mps": -0.000676760073467318,
+            "snr_estimate_db": 16.27937671328628,
+            "angle_deg": 22.628361242976037
+          }
+        ]
+      },
+      {
+        "frame": 5,
+        "num_detections": 5,
+        "detections": [
+          {
+            "range_m": 0.7113126608962933,
+            "radial_velocity_mps": -0.00022340060641047065,
+            "snr_estimate_db": 15.388881748279006,
+            "angle_deg": -25.67592206265246
+          },
+          {
+            "range_m": 1.2639954443747616,
+            "radial_velocity_mps": -0.0007202304347044648,
+            "snr_estimate_db": 14.412524579527407,
+            "angle_deg": 28.29089884337292
+          },
+          {
+            "range_m": 0.48543564960538244,
+            "radial_velocity_mps": 0.0027735887669740784,
+            "snr_estimate_db": 11.901341769263134,
+            "angle_deg": -44.15133499528165
+          },
+          {
+            "range_m": 6.684791200472608,
+            "radial_velocity_mps": -0.000451896426897304,
+            "snr_estimate_db": 19.588927426357447,
+            "angle_deg": 53.185748249416626
+          },
+          {
+            "range_m": 4.776762926717677,
+            "radial_velocity_mps": 0.000330505974828104,
+            "snr_estimate_db": 12.943867188890362,
+            "angle_deg": -5.784879721845832
+          }
+        ]
+      },
+      {
+        "frame": 6,
+        "num_detections": 6,
+        "detections": [
+          {
+            "range_m": 0.714120431314471,
+            "radial_velocity_mps": 0.0001263195325629214,
+            "snr_estimate_db": 16.571093017890572,
+            "angle_deg": -25.203129457619657
+          },
+          {
+            "range_m": 0.49268234152355916,
+            "radial_velocity_mps": -0.00011750143313267919,
+            "snr_estimate_db": 13.481571818580523,
+            "angle_deg": -43.733013261043496
+          },
+          {
+            "range_m": 1.2673552265028416,
+            "radial_velocity_mps": -0.0001985514978165549,
+            "snr_estimate_db": 11.173554216496768,
+            "angle_deg": 28.256843711510882
+          },
+          {
+            "range_m": 1.3610168150307222,
+            "radial_velocity_mps": -0.001254071345034965,
+            "snr_estimate_db": 11.750446607344054,
+            "angle_deg": -13.822015161330713
+          },
+          {
+            "range_m": 6.685463990761972,
+            "radial_velocity_mps": 0.0003767649050064449,
+            "snr_estimate_db": 18.57082810577504,
+            "angle_deg": 53.134832247666445
+          },
+          {
+            "range_m": 4.77322275663511,
+            "radial_velocity_mps": -6.921258185600413e-05,
+            "snr_estimate_db": 15.352470960450963,
+            "angle_deg": -4.276796958805981
+          }
+        ]
+      },
+      {
+        "frame": 7,
+        "num_detections": 6,
+        "detections": [
+          {
+            "range_m": 0.7118483276460978,
+            "radial_velocity_mps": -5.860508732421182e-05,
+            "snr_estimate_db": 17.14151556510989,
+            "angle_deg": -26.194611248979726
+          },
+          {
+            "range_m": 0.4926636844697236,
+            "radial_velocity_mps": -0.0002691059683162388,
+            "snr_estimate_db": 14.135191226634296,
+            "angle_deg": -44.068404217809295
+          },
+          {
+            "range_m": 1.359581111396329,
+            "radial_velocity_mps": -0.00013194046985784766,
+            "snr_estimate_db": 12.114801442075409,
+            "angle_deg": -13.748368608955536
+          },
+          {
+            "range_m": 3.45511142203169,
+            "radial_velocity_mps": -0.00029932812965963114,
+            "snr_estimate_db": 11.02866242449408,
+            "angle_deg": -24.063720398361564
+          },
+          {
+            "range_m": 4.773492097234807,
+            "radial_velocity_mps": 0.0010036372593203446,
+            "snr_estimate_db": 16.76564876730701,
+            "angle_deg": -3.6528967811318456
+          },
+          {
+            "range_m": 6.6817958733162675,
+            "radial_velocity_mps": 6.545563992097771e-05,
+            "snr_estimate_db": 19.46498827842471,
+            "angle_deg": 53.45775054442754
+          }
+        ]
+      },
+      {
+        "frame": 8,
+        "num_detections": 4,
+        "detections": [
+          {
+            "range_m": 0.7122985827938926,
+            "radial_velocity_mps": 4.4685247107547305e-05,
+            "snr_estimate_db": 17.034250793271266,
+            "angle_deg": -25.81508826238331
+          },
+          {
+            "range_m": 1.363014858589344,
+            "radial_velocity_mps": 8.623896457293826e-05,
+            "snr_estimate_db": 12.442046663285339,
+            "angle_deg": -13.524195933564283
+          },
+          {
+            "range_m": 4.778163524217609,
+            "radial_velocity_mps": -9.623547322683936e-05,
+            "snr_estimate_db": 17.332333070242882,
+            "angle_deg": -3.4800997502461866
+          },
+          {
+            "range_m": 6.68182252908381,
+            "radial_velocity_mps": -0.00048566622886600633,
+            "snr_estimate_db": 19.51432667445557,
+            "angle_deg": 52.47382261202856
+          }
+        ]
+      },
+      {
+        "frame": 9,
+        "num_detections": 5,
+        "detections": [
+          {
+            "range_m": 0.7170542676105588,
+            "radial_velocity_mps": 0.00013447628632384565,
+            "snr_estimate_db": 17.556301590922104,
+            "angle_deg": -25.519622527379465
+          },
+          {
+            "range_m": 0.48015584099962416,
+            "radial_velocity_mps": 0.000273403108071564,
+            "snr_estimate_db": 13.098563932902312,
+            "angle_deg": -44.40130029852868
+          },
+          {
+            "range_m": 1.3640621715696701,
+            "radial_velocity_mps": 0.00018349012738376672,
+            "snr_estimate_db": 11.642594524915113,
+            "angle_deg": -13.12344723861115
+          },
+          {
+            "range_m": 4.777929740150799,
+            "radial_velocity_mps": -0.0005399962687780424,
+            "snr_estimate_db": 18.421219039685415,
+            "angle_deg": -3.935216567467063
+          },
+          {
+            "range_m": 6.681306982868169,
+            "radial_velocity_mps": 0.0003796453927214642,
+            "snr_estimate_db": 19.92124296560478,
+            "angle_deg": 53.03496723524165
+          }
+        ]
+      },
+      {
+        "frame": 10,
+        "num_detections": 5,
+        "detections": [
+          {
+            "range_m": 0.7147084383228482,
+            "radial_velocity_mps": 0.0002588356485447094,
+            "snr_estimate_db": 17.4908242919696,
+            "angle_deg": -25.07629155167703
+          },
+          {
+            "range_m": 0.490791015406527,
+            "radial_velocity_mps": 0.0006669978671930936,
+            "snr_estimate_db": 13.317031629724356,
+            "angle_deg": -44.41479674441326
+          },
+          {
+            "range_m": 1.3592542452488183,
+            "radial_velocity_mps": 1.4458217808793208e-05,
+            "snr_estimate_db": 11.835412870264685,
+            "angle_deg": -13.407969393927639
+          },
+          {
+            "range_m": 4.77962459879178,
+            "radial_velocity_mps": 0.00030016735953085604,
+            "snr_estimate_db": 17.868964393571567,
+            "angle_deg": -4.0079408620865475
+          },
+          {
+            "range_m": 6.682114404690102,
+            "radial_velocity_mps": 0.0010853318621309065,
+            "snr_estimate_db": 19.30634106024336,
+            "angle_deg": 53.16760915663625
+          }
+        ]
+      },
+      {
+        "frame": 11,
+        "num_detections": 5,
+        "detections": [
+          {
+            "range_m": 0.7114997621304228,
+            "radial_velocity_mps": 2.6523378692998756e-05,
+            "snr_estimate_db": 16.595650606247002,
+            "angle_deg": -25.368259322519144
+          },
+          {
+            "range_m": 0.4124123257744506,
+            "radial_velocity_mps": 3.2176467831239444e-05,
+            "snr_estimate_db": 13.942472183839104,
+            "angle_deg": -43.57430947698913
+          },
+          {
+            "range_m": 1.358910217854508,
+            "radial_velocity_mps": 5.7857482317311766e-05,
+            "snr_estimate_db": 12.386891792547999,
+            "angle_deg": -13.74517722266304
+          },
+          {
+            "range_m": 4.782624151433088,
+            "radial_velocity_mps": 0.0006196820173222884,
+            "snr_estimate_db": 18.226844497054117,
+            "angle_deg": -3.9123230148566375
+          },
+          {
+            "range_m": 6.6820760890196755,
+            "radial_velocity_mps": 0.00025802497418006857,
+            "snr_estimate_db": 19.29160132847451,
+            "angle_deg": 51.72530570264457
+          }
+        ]
+      },
+      {
+        "frame": 12,
+        "num_detections": 5,
+        "detections": [
+          {
+            "range_m": 0.7125912000988761,
+            "radial_velocity_mps": 5.0955370215405345e-05,
+            "snr_estimate_db": 17.191670902405942,
+            "angle_deg": -25.96016509916633
+          },
+          {
+            "range_m": 0.4804097321348927,
+            "radial_velocity_mps": 3.842917778310284e-05,
+            "snr_estimate_db": 13.021695249344996,
+            "angle_deg": -43.7185319884256
+          },
+          {
+            "range_m": 1.360502077290057,
+            "radial_velocity_mps": 0.00014155620336856028,
+            "snr_estimate_db": 12.028422142736652,
+            "angle_deg": -13.714893248101841
+          },
+          {
+            "range_m": 4.781213747613557,
+            "radial_velocity_mps": 0.00029940222145382646,
+            "snr_estimate_db": 17.834055513267447,
+            "angle_deg": -3.8991067414451352
+          },
+          {
+            "range_m": 6.683353742899029,
+            "radial_velocity_mps": -3.876401768628366e-05,
+            "snr_estimate_db": 19.744776758666745,
+            "angle_deg": 53.27327701272458
+          }
+        ]
+      },
+      {
+        "frame": 13,
+        "num_detections": 5,
+        "detections": [
+          {
+            "range_m": 0.7176425266621757,
+            "radial_velocity_mps": 7.499585996300929e-05,
+            "snr_estimate_db": 17.025784124923874,
+            "angle_deg": -25.202959380853756
+          },
+          {
+            "range_m": 0.4834146826447797,
+            "radial_velocity_mps": 0.00018336345682620862,
+            "snr_estimate_db": 12.931514269885794,
+            "angle_deg": -44.02723792853878
+          },
+          {
+            "range_m": 1.2725613423544226,
+            "radial_velocity_mps": 2.5445130015016055e-05,
+            "snr_estimate_db": 11.344683814342208,
+            "angle_deg": 28.65525739153339
+          },
+          {
+            "range_m": 4.778228563798102,
+            "radial_velocity_mps": 2.3508298683520448e-05,
+            "snr_estimate_db": 17.306739685885223,
+            "angle_deg": -4.113355656773565
+          },
+          {
+            "range_m": 6.6825142130318715,
+            "radial_velocity_mps": 0.000302693219149609,
+            "snr_estimate_db": 20.15583219412796,
+            "angle_deg": 52.56404437382291
+          }
+        ]
+      },
+      {
+        "frame": 14,
+        "num_detections": 5,
+        "detections": [
+          {
+            "range_m": 0.7172209083466462,
+            "radial_velocity_mps": 6.1030577669802635e-05,
+            "snr_estimate_db": 16.98054454720679,
+            "angle_deg": -25.941691061231314
+          },
+          {
+            "range_m": 0.4863770044370088,
+            "radial_velocity_mps": -0.0001999336626409827,
+            "snr_estimate_db": 13.258386251560355,
+            "angle_deg": -44.766249229374665
+          },
+          {
+            "range_m": 1.2730643928123444,
+            "radial_velocity_mps": 9.480605384370293e-05,
+            "snr_estimate_db": 11.231292647507455,
+            "angle_deg": 28.92886615427524
+          },
+          {
+            "range_m": 4.781063305135435,
+            "radial_velocity_mps": 0.00043187534753927857,
+            "snr_estimate_db": 17.72201759886748,
+            "angle_deg": -3.746146820485626
+          },
+          {
+            "range_m": 6.680647072736186,
+            "radial_velocity_mps": -0.00019779978765422187,
+            "snr_estimate_db": 19.332737030169177,
+            "angle_deg": 51.93595604494829
+          }
+        ]
+      },
+      {
+        "frame": 15,
+        "num_detections": 5,
+        "detections": [
+          {
+            "range_m": 0.7140791146671992,
+            "radial_velocity_mps": 5.373519106378214e-05,
+            "snr_estimate_db": 17.102468299162673,
+            "angle_deg": -26.39298263455831
+          },
+          {
+            "range_m": 0.482331223247857,
+            "radial_velocity_mps": 8.864680618725308e-05,
+            "snr_estimate_db": 13.049023067018668,
+            "angle_deg": -44.2099933909923
+          },
+          {
+            "range_m": 1.3623333951591894,
+            "radial_velocity_mps": -4.231697856286753e-06,
+            "snr_estimate_db": 12.136916111528091,
+            "angle_deg": -13.847065410415627
+          },
+          {
+            "range_m": 4.778997275902185,
+            "radial_velocity_mps": 0.0009383131947374252,
+            "snr_estimate_db": 17.826051172625643,
+            "angle_deg": -4.002839034165277
+          },
+          {
+            "range_m": 6.680716396875872,
+            "radial_velocity_mps": 1.5428665917559202e-05,
+            "snr_estimate_db": 19.974801469114023,
+            "angle_deg": 52.01270384267975
+          }
+        ]
+      },
+      {
+        "frame": 16,
+        "num_detections": 6,
+        "detections": [
+          {
+            "range_m": 1.2670941497465769,
+            "radial_velocity_mps": -1.7500353949198718e-05,
+            "snr_estimate_db": 17.038382361225135,
+            "angle_deg": 27.335439599816265
+          },
+          {
+            "range_m": 0.7157139812061302,
+            "radial_velocity_mps": 0.0018296748578472896,
+            "snr_estimate_db": 13.983700831003674,
+            "angle_deg": -25.20990973665665
+          },
+          {
+            "range_m": 0.5738609723701003,
+            "radial_velocity_mps": 0.4756254294924093,
+            "snr_estimate_db": 16.20239712485517,
+            "angle_deg": -77.65656307372866
+          },
+          {
+            "range_m": 0.6387204467040134,
+            "radial_velocity_mps": 0.6921647223691713,
+            "snr_estimate_db": 18.93710507699087,
+            "angle_deg": 11.086271267708272
+          },
+          {
+            "range_m": 0.9310181927278195,
+            "radial_velocity_mps": -0.34424422197192334,
+            "snr_estimate_db": 10.99380375557937,
+            "angle_deg": 19.38811640831893
+          },
+          {
+            "range_m": 6.681806650352292,
+            "radial_velocity_mps": -0.0008180840974876084,
+            "snr_estimate_db": 20.482760967126723,
+            "angle_deg": 52.4951081300246
+          }
+        ]
+      },
+      {
+        "frame": 17,
+        "num_detections": 11,
+        "detections": [
+          {
+            "range_m": 1.2600278513567174,
+            "radial_velocity_mps": 0.0005515678773771314,
+            "snr_estimate_db": 17.456764811429245,
+            "angle_deg": 27.68103884054738
+          },
+          {
+            "range_m": 0.7131947824879796,
+            "radial_velocity_mps": -1.3037478228817496e-05,
+            "snr_estimate_db": 13.603093169516558,
+            "angle_deg": -26.59710947365225
+          },
+          {
+            "range_m": 1.1802525449013543,
+            "radial_velocity_mps": -0.1640934207599639,
+            "snr_estimate_db": 13.250602833312842,
+            "angle_deg": -21.273784048484057
+          },
+          {
+            "range_m": 1.3497021084725394,
+            "radial_velocity_mps": 0.424171810485149,
+            "snr_estimate_db": 13.308338907034411,
+            "angle_deg": -48.37877123092323
+          },
+          {
+            "range_m": 0.9558609311212439,
+            "radial_velocity_mps": 0.5963766846184155,
+            "snr_estimate_db": 13.267520535174315,
+            "angle_deg": 16.901526889329574
+          },
+          {
+            "range_m": 0.928884600253621,
+            "radial_velocity_mps": 0.8383033297393693,
+            "snr_estimate_db": 19.4833334739019,
+            "angle_deg": 8.85048059501938
+          },
+          {
+            "range_m": 2.4142482623053487,
+            "radial_velocity_mps": 0.4152863688414113,
+            "snr_estimate_db": 12.746094113836698,
+            "angle_deg": 22.48617885786757
+          },
+          {
+            "range_m": 1.1821293452636552,
+            "radial_velocity_mps": -0.4654137746207009,
+            "snr_estimate_db": 16.070537474535953,
+            "angle_deg": -23.7416260483533
+          },
+          {
+            "range_m": 1.18408745305642,
+            "radial_velocity_mps": -0.4059608658614532,
+            "snr_estimate_db": 12.422200030066541,
+            "angle_deg": -21.462079336856664
+          },
+          {
+            "range_m": 4.784935765350023,
+            "radial_velocity_mps": 0.0009615151704969552,
+            "snr_estimate_db": 17.978781865126034,
+            "angle_deg": -3.662738691316485
+          },
+          {
+            "range_m": 6.682044334610834,
+            "radial_velocity_mps": 0.0005312061033692044,
+            "snr_estimate_db": 18.563546468463652,
+            "angle_deg": 53.52045725634168
+          }
+        ]
+      },
+      {
+        "frame": 18,
+        "num_detections": 11,
+        "detections": [
+          {
+            "range_m": 1.26384902449477,
+            "radial_velocity_mps": -0.0008906538378256163,
+            "snr_estimate_db": 15.803447278806232,
+            "angle_deg": 27.549027093356816
+          },
+          {
+            "range_m": 0.7139143953444772,
+            "radial_velocity_mps": -0.0004514289417329586,
+            "snr_estimate_db": 13.902337738210583,
+            "angle_deg": -26.089453097614893
+          },
+          {
+            "range_m": 0.5184159151956943,
+            "radial_velocity_mps": 0.3140126256593517,
+            "snr_estimate_db": 19.206127666025182,
+            "angle_deg": 7.859836599295849
+          },
+          {
+            "range_m": 1.0498957575136172,
+            "radial_velocity_mps": -0.44408195164410297,
+            "snr_estimate_db": 24.69617574081672,
+            "angle_deg": -14.462463007904498
+          },
+          {
+            "range_m": 3.5084261724036083,
+            "radial_velocity_mps": 0.0001777501611494948,
+            "snr_estimate_db": 11.470100981059193,
+            "angle_deg": -21.6331931957937
+          },
+          {
+            "range_m": 1.2973255440038816,
+            "radial_velocity_mps": 0.6639480936242821,
+            "snr_estimate_db": 16.318129827153587,
+            "angle_deg": 8.74178100035768
+          },
+          {
+            "range_m": 4.353659103496716,
+            "radial_velocity_mps": -0.000850977323408103,
+            "snr_estimate_db": 14.83430947214509,
+            "angle_deg": 20.676645100373655
+          },
+          {
+            "range_m": 4.784246277985381,
+            "radial_velocity_mps": 0.0015989933411021079,
+            "snr_estimate_db": 13.61141591808273,
+            "angle_deg": -3.7477742429115213
+          },
+          {
+            "range_m": 4.527226119340755,
+            "radial_velocity_mps": 0.0002634715501750614,
+            "snr_estimate_db": 11.618759982719421,
+            "angle_deg": 18.946857637494354
+          },
+          {
+            "range_m": 6.684373700846332,
+            "radial_velocity_mps": -0.0003395738056730741,
+            "snr_estimate_db": 19.51953992874445,
+            "angle_deg": 53.43074347003897
+          },
+          {
+            "range_m": 2.3512364541890047,
+            "radial_velocity_mps": 0.7166665744426539,
+            "snr_estimate_db": 10.9290511715258,
+            "angle_deg": 10.993941163969657
+          }
+        ]
+      },
+      {
+        "frame": 19,
+        "num_detections": 12,
+        "detections": [
+          {
+            "range_m": 0.7134042742395545,
+            "radial_velocity_mps": -1.2278667074028414e-05,
+            "snr_estimate_db": 13.823123943649762,
+            "angle_deg": -26.196115359293145
+          },
+          {
+            "range_m": 1.269083109367539,
+            "radial_velocity_mps": -5.260224466276946e-05,
+            "snr_estimate_db": 15.800343524689627,
+            "angle_deg": 27.111765695390464
+          },
+          {
+            "range_m": 0.6710520521988124,
+            "radial_velocity_mps": 0.4439211344799717,
+            "snr_estimate_db": 19.86347565424592,
+            "angle_deg": -0.6062805817100351
+          },
+          {
+            "range_m": 0.6882882686543393,
+            "radial_velocity_mps": 0.598676953082313,
+            "snr_estimate_db": 11.912805554377833,
+            "angle_deg": 0.04724081885979506
+          },
+          {
+            "range_m": 0.9120144811791412,
+            "radial_velocity_mps": -0.16591097586735953,
+            "snr_estimate_db": 12.362602134465439,
+            "angle_deg": -8.528126168524976
+          },
+          {
+            "range_m": 0.8140305123251551,
+            "radial_velocity_mps": 0.14757490814917393,
+            "snr_estimate_db": 12.198886635393356,
+            "angle_deg": -6.018628649803849
+          },
+          {
+            "range_m": 1.04103770105597,
+            "radial_velocity_mps": 0.8037340447033586,
+            "snr_estimate_db": 20.483426105728462,
+            "angle_deg": -1.2841474579089167
+          },
+          {
+            "range_m": 2.9724165566234393,
+            "radial_velocity_mps": 0.0002796648156266657,
+            "snr_estimate_db": 16.360697749896126,
+            "angle_deg": -16.52302671376659
+          },
+          {
+            "range_m": 4.350122083969081,
+            "radial_velocity_mps": -0.00011380531115714543,
+            "snr_estimate_db": 15.020172400383649,
+            "angle_deg": 20.41829952759478
+          },
+          {
+            "range_m": 4.524812341558694,
+            "radial_velocity_mps": 0.0014555776488248161,
+            "snr_estimate_db": 11.69013455035931,
+            "angle_deg": 21.396427917545537
+          },
+          {
+            "range_m": 6.682191970776158,
+            "radial_velocity_mps": 0.00024749951315154744,
+            "snr_estimate_db": 19.976808075548867,
+            "angle_deg": 53.88249458588551
+          },
+          {
+            "range_m": 3.311248833981556,
+            "radial_velocity_mps": 0.42606529223031786,
+            "snr_estimate_db": 11.243359096668154,
+            "angle_deg": 16.988743437361165
+          }
+        ]
+      },
+      {
+        "frame": 20,
+        "num_detections": 12,
+        "detections": [
+          {
+            "range_m": 1.2652454508940436,
+            "radial_velocity_mps": 0.00037339795237400976,
+            "snr_estimate_db": 16.019618935250367,
+            "angle_deg": 27.288216570199108
+          },
+          {
+            "range_m": 0.7131774067099731,
+            "radial_velocity_mps": 3.588461983315771e-05,
+            "snr_estimate_db": 14.106221304816643,
+            "angle_deg": -26.18394963642663
+          },
+          {
+            "range_m": 0.4944776890904043,
+            "radial_velocity_mps": 7.021209517315923e-05,
+            "snr_estimate_db": 10.999890322991654,
+            "angle_deg": -44.06827167955263
+          },
+          {
+            "range_m": 0.870568678097554,
+            "radial_velocity_mps": 0.39397344472848095,
+            "snr_estimate_db": 21.166443531464,
+            "angle_deg": -0.7175964228331183
+          },
+          {
+            "range_m": 1.1405953472346277,
+            "radial_velocity_mps": 0.2195744454038367,
+            "snr_estimate_db": 12.671697867352087,
+            "angle_deg": 14.984721323086148
+          },
+          {
+            "range_m": 2.9715879597639616,
+            "radial_velocity_mps": -0.0003385888717910366,
+            "snr_estimate_db": 15.419822410079895,
+            "angle_deg": -16.653565602713464
+          },
+          {
+            "range_m": 0.9758956719504658,
+            "radial_velocity_mps": 0.6709634876923553,
+            "snr_estimate_db": 13.990405808492117,
+            "angle_deg": 2.2863373645489777
+          },
+          {
+            "range_m": 0.9616462738573937,
+            "radial_velocity_mps": 0.7614879486910744,
+            "snr_estimate_db": 13.095759794455656,
+            "angle_deg": 1.3328004541306295
+          },
+          {
+            "range_m": 4.353159314482716,
+            "radial_velocity_mps": 0.0027580663552016923,
+            "snr_estimate_db": 16.672466906046694,
+            "angle_deg": 19.630415682109614
+          },
+          {
+            "range_m": 1.8251069300118234,
+            "radial_velocity_mps": -0.30020494812045034,
+            "snr_estimate_db": 15.450198324684672,
+            "angle_deg": -19.493546179834357
+          },
+          {
+            "range_m": 1.8112543824442768,
+            "radial_velocity_mps": -0.3493370795940247,
+            "snr_estimate_db": 15.568756189465594,
+            "angle_deg": -24.000446172515
+          },
+          {
+            "range_m": 6.68601357921923,
+            "radial_velocity_mps": -0.0003193439951970868,
+            "snr_estimate_db": 19.404661469428333,
+            "angle_deg": 52.840548715344255
+          }
+        ]
+      },
+      {
+        "frame": 21,
+        "num_detections": 8,
+        "detections": [
+          {
+            "range_m": 1.2668516128832572,
+            "radial_velocity_mps": 0.00010138454515402692,
+            "snr_estimate_db": 16.18653072663065,
+            "angle_deg": 27.445431124431302
+          },
+          {
+            "range_m": 0.7135528909129348,
+            "radial_velocity_mps": 2.9574296065790108e-05,
+            "snr_estimate_db": 13.86994647572822,
+            "angle_deg": -26.02084984419764
+          },
+          {
+            "range_m": 1.037529576433296,
+            "radial_velocity_mps": 0.19289838770566253,
+            "snr_estimate_db": 23.85712732960414,
+            "angle_deg": 0.7309272536560739
+          },
+          {
+            "range_m": 2.97291593367927,
+            "radial_velocity_mps": -7.53078559001245e-05,
+            "snr_estimate_db": 14.413552474407883,
+            "angle_deg": -16.617724819609105
+          },
+          {
+            "range_m": 2.06034534315383,
+            "radial_velocity_mps": 0.1721560166314033,
+            "snr_estimate_db": 12.618086985388917,
+            "angle_deg": -9.318995217770858
+          },
+          {
+            "range_m": 4.344974430257516,
+            "radial_velocity_mps": 0.0002952197871990857,
+            "snr_estimate_db": 16.293009447313644,
+            "angle_deg": 21.070485250530265
+          },
+          {
+            "range_m": 4.527508825898243,
+            "radial_velocity_mps": -0.0006943612209471357,
+            "snr_estimate_db": 11.238407594375264,
+            "angle_deg": 22.3188311900103
+          },
+          {
+            "range_m": 6.681873143521559,
+            "radial_velocity_mps": -7.606432879190764e-05,
+            "snr_estimate_db": 18.95038682578403,
+            "angle_deg": 53.39547108995988
+          }
+        ]
+      },
+      {
+        "frame": 22,
+        "num_detections": 6,
+        "detections": [
+          {
+            "range_m": 1.2649052099419487,
+            "radial_velocity_mps": 4.078942673169368e-05,
+            "snr_estimate_db": 16.25324853267053,
+            "angle_deg": 26.899101662367986
+          },
+          {
+            "range_m": 0.7133568941349347,
+            "radial_velocity_mps": 4.357576668757097e-05,
+            "snr_estimate_db": 13.526361277256022,
+            "angle_deg": -25.975300772958008
+          },
+          {
+            "range_m": 2.9712591522733134,
+            "radial_velocity_mps": -0.0003919686521555084,
+            "snr_estimate_db": 14.104718940054067,
+            "angle_deg": -17.33616657823468
+          },
+          {
+            "range_m": 4.346841140561318,
+            "radial_velocity_mps": 0.00020642004989310385,
+            "snr_estimate_db": 17.343875107150044,
+            "angle_deg": 21.224141604564664
+          },
+          {
+            "range_m": 4.5343280070926815,
+            "radial_velocity_mps": -0.0007281037292817846,
+            "snr_estimate_db": 11.77298911233936,
+            "angle_deg": 20.10234494372166
+          },
+          {
+            "range_m": 6.684082124361221,
+            "radial_velocity_mps": 0.0006905904444937002,
+            "snr_estimate_db": 19.02975753495435,
+            "angle_deg": 53.694126578416004
+          }
+        ]
+      },
+      {
+        "frame": 23,
+        "num_detections": 10,
+        "detections": [
+          {
+            "range_m": 1.264181683331121,
+            "radial_velocity_mps": 0.0005074042474144578,
+            "snr_estimate_db": 16.142270251065117,
+            "angle_deg": 27.603548144828217
+          },
+          {
+            "range_m": 0.7132485597223786,
+            "radial_velocity_mps": 6.41371827445604e-05,
+            "snr_estimate_db": 13.792503906399086,
+            "angle_deg": -25.96501886174723
+          },
+          {
+            "range_m": 1.0650507670909568,
+            "radial_velocity_mps": 0.19359996515182837,
+            "snr_estimate_db": 13.812123356709849,
+            "angle_deg": -0.8452820674782233
+          },
+          {
+            "range_m": 2.9706886953091023,
+            "radial_velocity_mps": 0.00026107431784432803,
+            "snr_estimate_db": 14.561026226356557,
+            "angle_deg": -17.096818323379097
+          },
+          {
+            "range_m": 1.1382051946592604,
+            "radial_velocity_mps": 0.38767125220749077,
+            "snr_estimate_db": 12.611417589835341,
+            "angle_deg": 0.6251080236596025
+          },
+          {
+            "range_m": 4.351536525832733,
+            "radial_velocity_mps": 0.002011660158729035,
+            "snr_estimate_db": 15.075662431577912,
+            "angle_deg": 20.44319249784475
+          },
+          {
+            "range_m": 4.513576703874849,
+            "radial_velocity_mps": 0.026438854517753647,
+            "snr_estimate_db": 14.181865480385195,
+            "angle_deg": 2.0711678376717204
+          },
+          {
+            "range_m": 6.684942563389969,
+            "radial_velocity_mps": -1.4250761137545407e-05,
+            "snr_estimate_db": 18.615681611434706,
+            "angle_deg": 52.87724959153412
+          },
+          {
+            "range_m": 1.1273860477180184,
+            "radial_velocity_mps": 0.5148505960139895,
+            "snr_estimate_db": 10.839199028178728,
+            "angle_deg": -2.023114176080263
+          },
+          {
+            "range_m": 1.1769241208272943,
+            "radial_velocity_mps": 0.8418078218600716,
+            "snr_estimate_db": 13.721898528733544,
+            "angle_deg": 2.4750523886902798
+          }
+        ]
+      },
+      {
+        "frame": 24,
+        "num_detections": 10,
+        "detections": [
+          {
+            "range_m": 1.2641527979021763,
+            "radial_velocity_mps": 2.1019447565598505e-05,
+            "snr_estimate_db": 15.958820015917183,
+            "angle_deg": 27.3033659610419
+          },
+          {
+            "range_m": 0.7130514771258343,
+            "radial_velocity_mps": -4.757056803856483e-05,
+            "snr_estimate_db": 14.005942800583695,
+            "angle_deg": -26.08851580951585
+          },
+          {
+            "range_m": 0.4948024057286276,
+            "radial_velocity_mps": 9.548175807892275e-05,
+            "snr_estimate_db": 10.965505380476232,
+            "angle_deg": -44.0709905623874
+          },
+          {
+            "range_m": 1.0947002511826855,
+            "radial_velocity_mps": -0.16816986436267717,
+            "snr_estimate_db": 15.902737313325161,
+            "angle_deg": 2.0796070964367184
+          },
+          {
+            "range_m": 1.1193491530750566,
+            "radial_velocity_mps": -0.24494392678320584,
+            "snr_estimate_db": 12.30322481681555,
+            "angle_deg": -1.7032571910658478
+          },
+          {
+            "range_m": 2.9700193574343015,
+            "radial_velocity_mps": -0.00026219124297489395,
+            "snr_estimate_db": 14.54607532278927,
+            "angle_deg": -16.67947294573831
+          },
+          {
+            "range_m": 4.3489096574017605,
+            "radial_velocity_mps": -0.0009127509492860268,
+            "snr_estimate_db": 17.35518732214637,
+            "angle_deg": 20.725361175684856
+          },
+          {
+            "range_m": 4.518145769760663,
+            "radial_velocity_mps": -0.0010729620975887333,
+            "snr_estimate_db": 11.404624878102263,
+            "angle_deg": 21.7107714188277
+          },
+          {
+            "range_m": 6.684980520198709,
+            "radial_velocity_mps": -0.0002792766599674861,
+            "snr_estimate_db": 18.755632424650003,
+            "angle_deg": 53.4900053305261
+          },
+          {
+            "range_m": 1.471613245336303,
+            "radial_velocity_mps": 0.20722986120111866,
+            "snr_estimate_db": 11.64661285628847,
+            "angle_deg": -9.589446217379981
+          }
+        ]
+      },
+      {
+        "frame": 25,
+        "num_detections": 12,
+        "detections": [
+          {
+            "range_m": 0.7129789777514102,
+            "radial_velocity_mps": -2.2231907308283783e-05,
+            "snr_estimate_db": 13.853133650532941,
+            "angle_deg": -26.116655391964077
+          },
+          {
+            "range_m": 1.2635694659215106,
+            "radial_velocity_mps": -3.9378117180800716e-05,
+            "snr_estimate_db": 15.602035870400485,
+            "angle_deg": 27.426137163810296
+          },
+          {
+            "range_m": 1.0703903093811553,
+            "radial_velocity_mps": 0.1312050257939776,
+            "snr_estimate_db": 14.761642210627757,
+            "angle_deg": -3.1164400782829764
+          },
+          {
+            "range_m": 1.073709280251675,
+            "radial_velocity_mps": 0.435955192217931,
+            "snr_estimate_db": 18.043571729607983,
+            "angle_deg": 1.5084236711625074
+          },
+          {
+            "range_m": 1.0607673539080607,
+            "radial_velocity_mps": 0.37471072707454106,
+            "snr_estimate_db": 11.099257973816368,
+            "angle_deg": 1.30524515329688
+          },
+          {
+            "range_m": 2.9695180607302447,
+            "radial_velocity_mps": -0.0003209972002950121,
+            "snr_estimate_db": 14.558700976277056,
+            "angle_deg": -17.158109957100503
+          },
+          {
+            "range_m": 1.0447633326453531,
+            "radial_velocity_mps": 0.8207586589795733,
+            "snr_estimate_db": 17.22185120246471,
+            "angle_deg": 7.724985070638746
+          },
+          {
+            "range_m": 2.1180721841180072,
+            "radial_velocity_mps": 0.21569112111300875,
+            "snr_estimate_db": 10.907196225389868,
+            "angle_deg": -7.54765639162624
+          },
+          {
+            "range_m": 1.0416978005672783,
+            "radial_velocity_mps": 0.8916205101396475,
+            "snr_estimate_db": 13.382616564622616,
+            "angle_deg": 4.662306224632498
+          },
+          {
+            "range_m": 4.343603252082871,
+            "radial_velocity_mps": -0.0001901777289178761,
+            "snr_estimate_db": 16.75383339686625,
+            "angle_deg": 21.528858548970426
+          },
+          {
+            "range_m": 4.528085353138049,
+            "radial_velocity_mps": 0.0016231628951167022,
+            "snr_estimate_db": 11.550266306296527,
+            "angle_deg": 22.33672009989901
+          },
+          {
+            "range_m": 6.680989556216253,
+            "radial_velocity_mps": 0.0007509596637703741,
+            "snr_estimate_db": 19.01128997709677,
+            "angle_deg": 52.6417549520367
+          }
+        ]
+      },
+      {
+        "frame": 26,
+        "num_detections": 8,
+        "detections": [
+          {
+            "range_m": 0.7131095211844405,
+            "radial_velocity_mps": 8.628329875244299e-05,
+            "snr_estimate_db": 13.94777640706802,
+            "angle_deg": -26.049047492152745
+          },
+          {
+            "range_m": 1.2630561644106997,
+            "radial_velocity_mps": 0.0001542613785227405,
+            "snr_estimate_db": 15.644867545366266,
+            "angle_deg": 27.487503863822962
+          },
+          {
+            "range_m": 1.1586952667289103,
+            "radial_velocity_mps": 0.2388826830137882,
+            "snr_estimate_db": 12.310081010187073,
+            "angle_deg": 1.2640992347211493
+          },
+          {
+            "range_m": 2.9682130154007185,
+            "radial_velocity_mps": 0.0001593179055086609,
+            "snr_estimate_db": 13.931446542985917,
+            "angle_deg": -16.843762586196384
+          },
+          {
+            "range_m": 4.3451195885331595,
+            "radial_velocity_mps": 0.0001876739275552992,
+            "snr_estimate_db": 17.332580885879988,
+            "angle_deg": 21.610519735861153
+          },
+          {
+            "range_m": 1.2855318639984479,
+            "radial_velocity_mps": 0.4165753340670973,
+            "snr_estimate_db": 16.20097749376576,
+            "angle_deg": 1.6632239738184516
+          },
+          {
+            "range_m": 4.53650315775359,
+            "radial_velocity_mps": -0.0010980097018627503,
+            "snr_estimate_db": 11.148166734092737,
+            "angle_deg": 21.834393004973162
+          },
+          {
+            "range_m": 6.685180866075799,
+            "radial_velocity_mps": -0.0009219838352013502,
+            "snr_estimate_db": 18.998497622347955,
+            "angle_deg": 53.737788966677854
+          }
+        ]
+      },
+      {
+        "frame": 27,
+        "num_detections": 7,
+        "detections": [
+          {
+            "range_m": 1.2618118656421067,
+            "radial_velocity_mps": 0.000516224916475046,
+            "snr_estimate_db": 16.273483325365973,
+            "angle_deg": 27.691568133787932
+          },
+          {
+            "range_m": 0.7131576652721774,
+            "radial_velocity_mps": 9.325280134990955e-05,
+            "snr_estimate_db": 13.741051820567638,
+            "angle_deg": -26.028061448035736
+          },
+          {
+            "range_m": 1.2196373619043919,
+            "radial_velocity_mps": 0.1616495358993131,
+            "snr_estimate_db": 12.808584696328158,
+            "angle_deg": -0.2288727241444487
+          },
+          {
+            "range_m": 2.96966200778154,
+            "radial_velocity_mps": 0.00033404375021668783,
+            "snr_estimate_db": 13.18619877393214,
+            "angle_deg": -16.722665183400736
+          },
+          {
+            "range_m": 4.344333697529062,
+            "radial_velocity_mps": -0.0001013605904114343,
+            "snr_estimate_db": 16.96043915622496,
+            "angle_deg": 21.044856538553873
+          },
+          {
+            "range_m": 4.537031730406664,
+            "radial_velocity_mps": 0.0008022823711766886,
+            "snr_estimate_db": 11.039061086729888,
+            "angle_deg": 20.551695312127826
+          },
+          {
+            "range_m": 6.683872142699713,
+            "radial_velocity_mps": 0.0005934467260871404,
+            "snr_estimate_db": 18.632730219337574,
+            "angle_deg": 53.58946673291463
+          }
+        ]
+      },
+      {
+        "frame": 28,
+        "num_detections": 11,
+        "detections": [
+          {
+            "range_m": 1.265781017758815,
+            "radial_velocity_mps": 9.785479458418419e-05,
+            "snr_estimate_db": 16.19103634563523,
+            "angle_deg": 27.533172890259586
+          },
+          {
+            "range_m": 0.7131247788971843,
+            "radial_velocity_mps": 8.672025182469068e-05,
+            "snr_estimate_db": 14.036893178239964,
+            "angle_deg": -26.062411491478674
+          },
+          {
+            "range_m": 0.4944515155733596,
+            "radial_velocity_mps": 8.356619329746022e-05,
+            "snr_estimate_db": 10.961397291990211,
+            "angle_deg": -44.082592665807056
+          },
+          {
+            "range_m": 1.1898486979713556,
+            "radial_velocity_mps": -0.23761426072801275,
+            "snr_estimate_db": 21.91609502032872,
+            "angle_deg": 0.47768791385409615
+          },
+          {
+            "range_m": 2.969797146756166,
+            "radial_velocity_mps": 0.000207571839052556,
+            "snr_estimate_db": 13.62629500761743,
+            "angle_deg": -16.990985085186104
+          },
+          {
+            "range_m": 2.193998719289537,
+            "radial_velocity_mps": -0.28674728419374024,
+            "snr_estimate_db": 10.940684411527862,
+            "angle_deg": -11.462720445948829
+          },
+          {
+            "range_m": 4.341511677100684,
+            "radial_velocity_mps": 2.9419048553866994e-06,
+            "snr_estimate_db": 16.853278771378708,
+            "angle_deg": 21.47894346856632
+          },
+          {
+            "range_m": 1.4518477503589566,
+            "radial_velocity_mps": -0.5981533933654853,
+            "snr_estimate_db": 15.799573606570442,
+            "angle_deg": 0.7597417438043601
+          },
+          {
+            "range_m": 4.531990801048464,
+            "radial_velocity_mps": -0.0006674770635377669,
+            "snr_estimate_db": 11.355482539653226,
+            "angle_deg": 21.68296481068699
+          },
+          {
+            "range_m": 6.683761204541823,
+            "radial_velocity_mps": -0.0007479184473654351,
+            "snr_estimate_db": 19.48651345307796,
+            "angle_deg": 54.04518044134481
+          },
+          {
+            "range_m": 1.4505590254214955,
+            "radial_velocity_mps": 0.26367339492914554,
+            "snr_estimate_db": 10.900680421455744,
+            "angle_deg": -5.797518183385452
+          }
+        ]
+      },
+      {
+        "frame": 29,
+        "num_detections": 11,
+        "detections": [
+          {
+            "range_m": 0.7131355985216788,
+            "radial_velocity_mps": 7.646651646820949e-05,
+            "snr_estimate_db": 14.270229572397193,
+            "angle_deg": -26.099545449182944
+          },
+          {
+            "range_m": 1.2628048890202157,
+            "radial_velocity_mps": 4.2911724724637076e-05,
+            "snr_estimate_db": 15.965644214955194,
+            "angle_deg": 27.50011122458641
+          },
+          {
+            "range_m": 0.49469670478912675,
+            "radial_velocity_mps": 8.237651470451063e-05,
+            "snr_estimate_db": 11.042037688679896,
+            "angle_deg": -44.08272185509353
+          },
+          {
+            "range_m": 1.0430537932110995,
+            "radial_velocity_mps": -0.42713665096618453,
+            "snr_estimate_db": 15.966784419842007,
+            "angle_deg": 4.545329320300372
+          },
+          {
+            "range_m": 1.0440328908265284,
+            "radial_velocity_mps": -0.5361377056958972,
+            "snr_estimate_db": 12.12782021182037,
+            "angle_deg": -0.17403419974160816
+          },
+          {
+            "range_m": 2.9710033043928497,
+            "radial_velocity_mps": -4.321366494078494e-05,
+            "snr_estimate_db": 15.413459329950568,
+            "angle_deg": -17.144082108331833
+          },
+          {
+            "range_m": 4.3443951261335405,
+            "radial_velocity_mps": -3.6056316465986746e-05,
+            "snr_estimate_db": 17.109742513005955,
+            "angle_deg": 21.945848837871804
+          },
+          {
+            "range_m": 1.688007017265289,
+            "radial_velocity_mps": -0.8576352995359179,
+            "snr_estimate_db": 14.451721128108721,
+            "angle_deg": 7.613212838396984
+          },
+          {
+            "range_m": 1.6530026625729204,
+            "radial_velocity_mps": -0.9221759269272873,
+            "snr_estimate_db": 14.318441248467124,
+            "angle_deg": -0.0543397431344798
+          },
+          {
+            "range_m": 4.5290570889440245,
+            "radial_velocity_mps": -0.00012000845648191354,
+            "snr_estimate_db": 11.530605026353138,
+            "angle_deg": 20.00236702174677
+          },
+          {
+            "range_m": 6.683162730989605,
+            "radial_velocity_mps": -0.0001250614881575535,
+            "snr_estimate_db": 19.32770978159799,
+            "angle_deg": 53.52099993463348
+          }
+        ]
+      },
+      {
+        "frame": 30,
+        "num_detections": 14,
+        "detections": [
+          {
+            "range_m": 1.2639663068350833,
+            "radial_velocity_mps": 0.00028774703376159176,
+            "snr_estimate_db": 16.670149838833346,
+            "angle_deg": 27.531799571062244
+          },
+          {
+            "range_m": 0.7133694127049548,
+            "radial_velocity_mps": 6.973729833293888e-05,
+            "snr_estimate_db": 13.894296164870113,
+            "angle_deg": -25.82184559079061
+          },
+          {
+            "range_m": 0.49447613539554036,
+            "radial_velocity_mps": 7.68006465540697e-05,
+            "snr_estimate_db": 10.846497826425626,
+            "angle_deg": -44.06329388589941
+          },
+          {
+            "range_m": 0.7953207574192668,
+            "radial_velocity_mps": -0.5137667932322363,
+            "snr_estimate_db": 13.892785489370167,
+            "angle_deg": 5.0219668652934635
+          },
+          {
+            "range_m": 0.8711197695280951,
+            "radial_velocity_mps": -0.4089336914025743,
+            "snr_estimate_db": 13.107875045938421,
+            "angle_deg": 6.683911715869559
+          },
+          {
+            "range_m": 1.0933606392826372,
+            "radial_velocity_mps": -0.24751386499401493,
+            "snr_estimate_db": 16.60471679070604,
+            "angle_deg": 16.575887217165867
+          },
+          {
+            "range_m": 2.9695620250192114,
+            "radial_velocity_mps": 0.0001282322831238089,
+            "snr_estimate_db": 16.255575817322697,
+            "angle_deg": -17.109557805058426
+          },
+          {
+            "range_m": 1.6613030767548187,
+            "radial_velocity_mps": 0.1799665894318,
+            "snr_estimate_db": 18.478366398415126,
+            "angle_deg": -30.017148333931605
+          },
+          {
+            "range_m": 4.346297186604336,
+            "radial_velocity_mps": 0.00019457218042290096,
+            "snr_estimate_db": 15.965298308722723,
+            "angle_deg": 20.651513306609473
+          },
+          {
+            "range_m": 1.8680381545166578,
+            "radial_velocity_mps": 0.4898818498347274,
+            "snr_estimate_db": 16.496396851639677,
+            "angle_deg": -17.883122145765512
+          },
+          {
+            "range_m": 4.5291505749706005,
+            "radial_velocity_mps": 0.0001689521987423606,
+            "snr_estimate_db": 12.29546286684993,
+            "angle_deg": 19.743513001777917
+          },
+          {
+            "range_m": 6.6861207252037635,
+            "radial_velocity_mps": 0.0003910888752394911,
+            "snr_estimate_db": 19.063204696021256,
+            "angle_deg": 53.53445683142554
+          },
+          {
+            "range_m": 1.7825952141511474,
+            "radial_velocity_mps": -1.0143586248658587,
+            "snr_estimate_db": 12.99934015843375,
+            "angle_deg": 3.4196999755236037
+          },
+          {
+            "range_m": 3.4221144481069286,
+            "radial_velocity_mps": -0.5231091201067394,
+            "snr_estimate_db": 11.20420507063876,
+            "angle_deg": -51.039283945065996
+          }
+        ]
+      },
+      {
+        "frame": 31,
+        "num_detections": 12,
+        "detections": [
+          {
+            "range_m": 1.2643677183919837,
+            "radial_velocity_mps": -0.00021961107941875384,
+            "snr_estimate_db": 16.447459348915757,
+            "angle_deg": 27.94497129664285
+          },
+          {
+            "range_m": 0.7123387291333159,
+            "radial_velocity_mps": -7.88327728828151e-05,
+            "snr_estimate_db": 13.254298287119708,
+            "angle_deg": -26.01862519106479
+          },
+          {
+            "range_m": 0.6043736481741033,
+            "radial_velocity_mps": -0.3786377810524685,
+            "snr_estimate_db": 17.138622969678593,
+            "angle_deg": 2.9517645427607846
+          },
+          {
+            "range_m": 0.6243485191226958,
+            "radial_velocity_mps": -0.4482564481656365,
+            "snr_estimate_db": 11.843301733924957,
+            "angle_deg": 5.962646213968414
+          },
+          {
+            "range_m": 0.9459964523346767,
+            "radial_velocity_mps": -0.6516599539492456,
+            "snr_estimate_db": 20.4879018089903,
+            "angle_deg": 0.08548993488031603
+          },
+          {
+            "range_m": 2.932226057910545,
+            "radial_velocity_mps": -0.0005351722379428942,
+            "snr_estimate_db": 11.994028926231541,
+            "angle_deg": -18.09378390220664
+          },
+          {
+            "range_m": 2.2527639829570187,
+            "radial_velocity_mps": -0.33910243756010916,
+            "snr_estimate_db": 11.69976153369365,
+            "angle_deg": 73.65474949936113
+          },
+          {
+            "range_m": 1.8712957772805872,
+            "radial_velocity_mps": 0.25316825107364815,
+            "snr_estimate_db": 11.305011248053143,
+            "angle_deg": -23.285666194822475
+          },
+          {
+            "range_m": 1.886909238413132,
+            "radial_velocity_mps": -0.6729136917743179,
+            "snr_estimate_db": 13.862604264477383,
+            "angle_deg": 1.431406593113358
+          },
+          {
+            "range_m": 4.351910096701271,
+            "radial_velocity_mps": -0.00026083162700736193,
+            "snr_estimate_db": 19.384715881681498,
+            "angle_deg": 21.30356116103284
+          },
+          {
+            "range_m": 4.521623900890263,
+            "radial_velocity_mps": 9.009847995601957e-05,
+            "snr_estimate_db": 13.224858329836529,
+            "angle_deg": 19.88945572421389
+          },
+          {
+            "range_m": 6.682155506146221,
+            "radial_velocity_mps": -0.0006422517581369635,
+            "snr_estimate_db": 19.69467912316344,
+            "angle_deg": 53.28844230678093
+          }
+        ]
+      },
+      {
+        "frame": 32,
+        "num_detections": 12,
+        "detections": [
+          {
+            "range_m": 1.2640834144504063,
+            "radial_velocity_mps": 7.115782701044245e-05,
+            "snr_estimate_db": 15.886649455345337,
+            "angle_deg": 27.42132647221636
+          },
+          {
+            "range_m": 0.7146584460368502,
+            "radial_velocity_mps": -0.0004051612955871879,
+            "snr_estimate_db": 14.194348979793876,
+            "angle_deg": -25.676676010644016
+          },
+          {
+            "range_m": 0.5150696492989506,
+            "radial_velocity_mps": -0.6319846758875711,
+            "snr_estimate_db": 15.598678902591717,
+            "angle_deg": 20.666945778721963
+          },
+          {
+            "range_m": 0.5224164621193219,
+            "radial_velocity_mps": -0.5303915144158858,
+            "snr_estimate_db": 11.398005431765261,
+            "angle_deg": 19.274759890332927
+          },
+          {
+            "range_m": 0.5089595496210029,
+            "radial_velocity_mps": -0.3679545795068457,
+            "snr_estimate_db": 12.211459000262606,
+            "angle_deg": 17.976625111658667
+          },
+          {
+            "range_m": 0.5258389359097821,
+            "radial_velocity_mps": -0.8435866740501488,
+            "snr_estimate_db": 18.08394171299611,
+            "angle_deg": 21.14247262668917
+          },
+          {
+            "range_m": 1.2691162370679678,
+            "radial_velocity_mps": 0.26268801599470937,
+            "snr_estimate_db": 15.361222841126466,
+            "angle_deg": -15.558663835867511
+          },
+          {
+            "range_m": 0.5222705997108644,
+            "radial_velocity_mps": -1.0722778303392184,
+            "snr_estimate_db": 14.579129459470916,
+            "angle_deg": 21.95352260096661
+          },
+          {
+            "range_m": 1.597523154439944,
+            "radial_velocity_mps": 0.4705988276487018,
+            "snr_estimate_db": 11.342975814490936,
+            "angle_deg": 43.202888612899216
+          },
+          {
+            "range_m": 0.5265661378575416,
+            "radial_velocity_mps": -1.455527883482131,
+            "snr_estimate_db": 13.473976812277517,
+            "angle_deg": 21.58295773568636
+          },
+          {
+            "range_m": 6.686033405386263,
+            "radial_velocity_mps": 0.00047772310700988635,
+            "snr_estimate_db": 18.73713421690203,
+            "angle_deg": 53.168536452353976
+          },
+          {
+            "range_m": 4.480665523317468,
+            "radial_velocity_mps": -0.0027223909700590516,
+            "snr_estimate_db": 14.2496154426558,
+            "angle_deg": 21.214175542015283
+          }
+        ]
+      },
+      {
+        "frame": 33,
+        "num_detections": 6,
+        "detections": [
+          {
+            "range_m": 0.718206477215037,
+            "radial_velocity_mps": -0.0019597255320892,
+            "snr_estimate_db": 14.557193774196666,
+            "angle_deg": -25.76474946286365
+          },
+          {
+            "range_m": 1.2672994798897181,
+            "radial_velocity_mps": 0.0001234905404589357,
+            "snr_estimate_db": 15.704145903670298,
+            "angle_deg": 27.58407835043316
+          },
+          {
+            "range_m": 0.4964399586530281,
+            "radial_velocity_mps": 0.27188874314919925,
+            "snr_estimate_db": 15.04993243440753,
+            "angle_deg": -2.6507161789358094
+          },
+          {
+            "range_m": 4.344546391983425,
+            "radial_velocity_mps": 0.0002281686225807917,
+            "snr_estimate_db": 18.125750849489208,
+            "angle_deg": 19.919175096437712
+          },
+          {
+            "range_m": 6.680564871559765,
+            "radial_velocity_mps": -0.00036699332406724263,
+            "snr_estimate_db": 19.691964170869948,
+            "angle_deg": 53.002968909388144
+          },
+          {
+            "range_m": 4.520367928741066,
+            "radial_velocity_mps": -0.0027432110499344135,
+            "snr_estimate_db": 11.42195191042888,
+            "angle_deg": 18.398215936975287
+          }
+        ]
+      },
+      {
+        "frame": 34,
+        "num_detections": 5,
+        "detections": [
+          {
+            "range_m": 1.2626313485840426,
+            "radial_velocity_mps": 0.000296448640827884,
+            "snr_estimate_db": 16.020000695010005,
+            "angle_deg": 27.27872177763587
+          },
+          {
+            "range_m": 0.7133589415579048,
+            "radial_velocity_mps": 0.002068474522335424,
+            "snr_estimate_db": 14.440920523553832,
+            "angle_deg": -26.856593007473816
+          },
+          {
+            "range_m": 4.345939853869263,
+            "radial_velocity_mps": 0.0003460533665307572,
+            "snr_estimate_db": 19.30512552267545,
+            "angle_deg": 20.071518745464342
+          },
+          {
+            "range_m": 6.680248348556588,
+            "radial_velocity_mps": 0.00028901139258143946,
+            "snr_estimate_db": 19.382465631278052,
+            "angle_deg": 52.99174463759848
+          },
+          {
+            "range_m": 4.527947284658276,
+            "radial_velocity_mps": 0.002726568043866257,
+            "snr_estimate_db": 12.197048061372586,
+            "angle_deg": 18.58973643971105
+          }
+        ]
+      },
+      {
+        "frame": 35,
+        "num_detections": 4,
+        "detections": [
+          {
+            "range_m": 1.260663442645927,
+            "radial_velocity_mps": -0.0010862949264656184,
+            "snr_estimate_db": 17.232644005030735,
+            "angle_deg": 27.464779426879705
+          },
+          {
+            "range_m": 0.7128838371708442,
+            "radial_velocity_mps": 3.461168015842031e-05,
+            "snr_estimate_db": 13.048058277084934,
+            "angle_deg": -26.098728047790683
+          },
+          {
+            "range_m": 6.685124491005642,
+            "radial_velocity_mps": -0.00037915208208258227,
+            "snr_estimate_db": 20.08285218591539,
+            "angle_deg": 53.44479502536942
+          },
+          {
+            "range_m": 4.563347523146573,
+            "radial_velocity_mps": 0.00014228990003011853,
+            "snr_estimate_db": 10.95430586785411,
+            "angle_deg": -20.913959106440778
+          }
+        ]
+      },
+      {
+        "frame": 36,
+        "num_detections": 9,
+        "detections": [
+          {
+            "range_m": 0.7148721781593211,
+            "radial_velocity_mps": 0.00047214213537225973,
+            "snr_estimate_db": 14.400242359187413,
+            "angle_deg": -26.081402253065818
+          },
+          {
+            "range_m": 1.2679286817067807,
+            "radial_velocity_mps": -2.1214095772784892e-05,
+            "snr_estimate_db": 15.57040310016658,
+            "angle_deg": 27.299797020330686
+          },
+          {
+            "range_m": 0.49450760507134034,
+            "radial_velocity_mps": 9.712023114856872e-05,
+            "snr_estimate_db": 11.024987090788034,
+            "angle_deg": -44.01453045043388
+          },
+          {
+            "range_m": 0.5239416674589502,
+            "radial_velocity_mps": 0.23692076594405584,
+            "snr_estimate_db": 18.28560238510313,
+            "angle_deg": 9.8507557739666
+          },
+          {
+            "range_m": 1.1159812446099866,
+            "radial_velocity_mps": -0.3234683298268699,
+            "snr_estimate_db": 12.281517104285356,
+            "angle_deg": -13.342725768353938
+          },
+          {
+            "range_m": 1.2354427171920863,
+            "radial_velocity_mps": 0.6740316965430403,
+            "snr_estimate_db": 18.443882739821017,
+            "angle_deg": 12.709496931632286
+          },
+          {
+            "range_m": 4.359383077952809,
+            "radial_velocity_mps": 0.0004239380886957811,
+            "snr_estimate_db": 17.913750601241304,
+            "angle_deg": 20.60210219972499
+          },
+          {
+            "range_m": 6.682247604033933,
+            "radial_velocity_mps": 0.0006734322260010655,
+            "snr_estimate_db": 18.95171008620654,
+            "angle_deg": 53.20593840726676
+          },
+          {
+            "range_m": 4.515253864775219,
+            "radial_velocity_mps": -0.0022043096584594603,
+            "snr_estimate_db": 10.773685102072593,
+            "angle_deg": 21.81019709922299
+          }
+        ]
+      },
+      {
+        "frame": 37,
+        "num_detections": 12,
+        "detections": [
+          {
+            "range_m": 1.2623291033559938,
+            "radial_velocity_mps": 0.00073341197971049,
+            "snr_estimate_db": 16.85472451734523,
+            "angle_deg": 27.927006126825294
+          },
+          {
+            "range_m": 0.7132814497504937,
+            "radial_velocity_mps": 0.000732853188655952,
+            "snr_estimate_db": 13.29773115899971,
+            "angle_deg": -26.044598715072706
+          },
+          {
+            "range_m": 0.6669409726169546,
+            "radial_velocity_mps": 0.34350128616974174,
+            "snr_estimate_db": 17.878285050395085,
+            "angle_deg": 1.5904669318754563
+          },
+          {
+            "range_m": 0.6645740454534464,
+            "radial_velocity_mps": 0.4965424841419819,
+            "snr_estimate_db": 13.959973257475529,
+            "angle_deg": -1.410444104008574
+          },
+          {
+            "range_m": 0.913201874208553,
+            "radial_velocity_mps": -0.33935564200280965,
+            "snr_estimate_db": 27.481383485874595,
+            "angle_deg": -8.554894874447731
+          },
+          {
+            "range_m": 2.9684063941434182,
+            "radial_velocity_mps": 0.00020724322004863312,
+            "snr_estimate_db": 16.551840097603737,
+            "angle_deg": -16.921607088223332
+          },
+          {
+            "range_m": 0.6911081577564504,
+            "radial_velocity_mps": 0.7439545905126618,
+            "snr_estimate_db": 14.05942186636208,
+            "angle_deg": -4.326092772881448
+          },
+          {
+            "range_m": 4.352857810373176,
+            "radial_velocity_mps": 0.00012422289592244195,
+            "snr_estimate_db": 18.50057816606881,
+            "angle_deg": 20.55447538520156
+          },
+          {
+            "range_m": 0.716969364691379,
+            "radial_velocity_mps": 0.9490570882506506,
+            "snr_estimate_db": 13.452584982941488,
+            "angle_deg": -5.498089051735917
+          },
+          {
+            "range_m": 4.521789259573011,
+            "radial_velocity_mps": -0.0008828289998580517,
+            "snr_estimate_db": 12.75232916461395,
+            "angle_deg": 19.702751638163548
+          },
+          {
+            "range_m": 6.683051671056206,
+            "radial_velocity_mps": -0.0005690412903827585,
+            "snr_estimate_db": 18.89726066466534,
+            "angle_deg": 53.237334586562696
+          },
+          {
+            "range_m": 0.9982254582168169,
+            "radial_velocity_mps": -0.9097547091019447,
+            "snr_estimate_db": 11.226912848095065,
+            "angle_deg": -8.257635034426448
+          }
+        ]
+      },
+      {
+        "frame": 38,
+        "num_detections": 12,
+        "detections": [
+          {
+            "range_m": 1.269167466344565,
+            "radial_velocity_mps": -0.000858691140366415,
+            "snr_estimate_db": 17.278277626771615,
+            "angle_deg": 28.155600370436495
+          },
+          {
+            "range_m": 0.7135373707845453,
+            "radial_velocity_mps": 3.884341098168283e-05,
+            "snr_estimate_db": 13.295481933064046,
+            "angle_deg": -25.86191631383609
+          },
+          {
+            "range_m": 0.8712010334217427,
+            "radial_velocity_mps": 0.3856234882086127,
+            "snr_estimate_db": 23.8092757299114,
+            "angle_deg": 0.9580709479526969
+          },
+          {
+            "range_m": 1.121200206322999,
+            "radial_velocity_mps": 0.21259041454793126,
+            "snr_estimate_db": 12.789263371607033,
+            "angle_deg": 15.622352568567631
+          },
+          {
+            "range_m": 2.9662379373885175,
+            "radial_velocity_mps": -0.00013671011404617033,
+            "snr_estimate_db": 15.542131263589775,
+            "angle_deg": -16.875630076892307
+          },
+          {
+            "range_m": 1.8667369039543822,
+            "radial_velocity_mps": 0.3916666639552513,
+            "snr_estimate_db": 13.330976771579158,
+            "angle_deg": -23.54926012287544
+          },
+          {
+            "range_m": 1.8609999896196063,
+            "radial_velocity_mps": -0.30711153267448815,
+            "snr_estimate_db": 24.697416530594975,
+            "angle_deg": -19.518263537403538
+          },
+          {
+            "range_m": 2.6827844608819915,
+            "radial_velocity_mps": 0.391098031084147,
+            "snr_estimate_db": 11.53012947905766,
+            "angle_deg": 12.80049117043966
+          },
+          {
+            "range_m": 4.347564438440287,
+            "radial_velocity_mps": 0.0010795803208424977,
+            "snr_estimate_db": 18.154081093156314,
+            "angle_deg": 20.427849876042643
+          },
+          {
+            "range_m": 4.526034478564863,
+            "radial_velocity_mps": 6.083817568211982e-05,
+            "snr_estimate_db": 11.277416646328478,
+            "angle_deg": 20.63128697210024
+          },
+          {
+            "range_m": 6.683094895364119,
+            "radial_velocity_mps": -6.222353565247583e-05,
+            "snr_estimate_db": 19.165253827482182,
+            "angle_deg": 52.99171986478787
+          },
+          {
+            "range_m": 1.4724335046866506,
+            "radial_velocity_mps": 0.7407936284071164,
+            "snr_estimate_db": 11.403842796065524,
+            "angle_deg": 0.35012736663762495
+          }
+        ]
+      },
+      {
+        "frame": 39,
+        "num_detections": 9,
+        "detections": [
+          {
+            "range_m": 1.2616618877590562,
+            "radial_velocity_mps": -0.0004903412951644548,
+            "snr_estimate_db": 16.781276141369343,
+            "angle_deg": 27.454505183762173
+          },
+          {
+            "range_m": 0.7136824853704801,
+            "radial_velocity_mps": 6.528108114971278e-05,
+            "snr_estimate_db": 13.817023040129149,
+            "angle_deg": -26.065888975370246
+          },
+          {
+            "range_m": 1.088394795335835,
+            "radial_velocity_mps": 0.3890340635418573,
+            "snr_estimate_db": 17.734106287251425,
+            "angle_deg": 0.631671359163074
+          },
+          {
+            "range_m": 2.9717294760436728,
+            "radial_velocity_mps": 0.00015620473611912302,
+            "snr_estimate_db": 15.462131077531607,
+            "angle_deg": -16.926040993264973
+          },
+          {
+            "range_m": 2.066206520702004,
+            "radial_velocity_mps": 0.3385748760751493,
+            "snr_estimate_db": 11.510300556189675,
+            "angle_deg": -5.1520278763473
+          },
+          {
+            "range_m": 4.3454390757763335,
+            "radial_velocity_mps": 0.00047849671387348487,
+            "snr_estimate_db": 17.521590410959575,
+            "angle_deg": 20.474752011513523
+          },
+          {
+            "range_m": 4.526354322338461,
+            "radial_velocity_mps": -0.0005825204881838152,
+            "snr_estimate_db": 12.660219238117358,
+            "angle_deg": 23.19587493380775
+          },
+          {
+            "range_m": 6.681196883295746,
+            "radial_velocity_mps": 0.00022571051578783443,
+            "snr_estimate_db": 19.105473908850662,
+            "angle_deg": 53.27998066862841
+          },
+          {
+            "range_m": 1.7635175921984576,
+            "radial_velocity_mps": 0.8452391356274624,
+            "snr_estimate_db": 12.103518712901462,
+            "angle_deg": -0.673430024243875
+          }
+        ]
+      },
+      {
+        "frame": 40,
+        "num_detections": 10,
+        "detections": [
+          {
+            "range_m": 1.262604818986395,
+            "radial_velocity_mps": 0.00020778049282813469,
+            "snr_estimate_db": 16.83664203879515,
+            "angle_deg": 27.301424034098055
+          },
+          {
+            "range_m": 0.7132422153781837,
+            "radial_velocity_mps": 9.46784265596599e-05,
+            "snr_estimate_db": 13.441027132559505,
+            "angle_deg": -26.154746709408908
+          },
+          {
+            "range_m": 1.1882704607892618,
+            "radial_velocity_mps": 0.1836722503192035,
+            "snr_estimate_db": 16.461096960903202,
+            "angle_deg": 3.6932122434347012
+          },
+          {
+            "range_m": 1.1337663044002892,
+            "radial_velocity_mps": 0.278957569996371,
+            "snr_estimate_db": 15.793952888485741,
+            "angle_deg": 3.2355058923378865
+          },
+          {
+            "range_m": 2.9707995989630174,
+            "radial_velocity_mps": -0.0001896679709522046,
+            "snr_estimate_db": 13.825852201751982,
+            "angle_deg": -17.116883817211765
+          },
+          {
+            "range_m": 1.1438263434227722,
+            "radial_velocity_mps": 0.4387054071160799,
+            "snr_estimate_db": 15.885939334202316,
+            "angle_deg": 5.321796127934066
+          },
+          {
+            "range_m": 4.343229229384685,
+            "radial_velocity_mps": 4.9979603546667976e-05,
+            "snr_estimate_db": 17.03061620821045,
+            "angle_deg": 21.125537992252447
+          },
+          {
+            "range_m": 2.2640160081643077,
+            "radial_velocity_mps": 0.19921138770469635,
+            "snr_estimate_db": 11.833427987317206,
+            "angle_deg": -7.34088593163711
+          },
+          {
+            "range_m": 4.525925344277466,
+            "radial_velocity_mps": 0.003611722132305673,
+            "snr_estimate_db": 11.656235002764856,
+            "angle_deg": 21.388219636895197
+          },
+          {
+            "range_m": 6.683904143256345,
+            "radial_velocity_mps": -0.0008063988091089332,
+            "snr_estimate_db": 18.871884850893284,
+            "angle_deg": 52.72162581307772
+          }
+        ]
+      },
+      {
+        "frame": 41,
+        "num_detections": 9,
+        "detections": [
+          {
+            "range_m": 1.262767530900038,
+            "radial_velocity_mps": 3.120567800019715e-05,
+            "snr_estimate_db": 15.969670911571301,
+            "angle_deg": 27.560437350759873
+          },
+          {
+            "range_m": 0.7133435361844245,
+            "radial_velocity_mps": 7.592141550695306e-05,
+            "snr_estimate_db": 14.002971494709923,
+            "angle_deg": -26.07054147369418
+          },
+          {
+            "range_m": 0.4942790097486026,
+            "radial_velocity_mps": 5.922185016515447e-05,
+            "snr_estimate_db": 10.907281702686113,
+            "angle_deg": -44.036630123466814
+          },
+          {
+            "range_m": 1.2159416475060651,
+            "radial_velocity_mps": -0.1894170083252012,
+            "snr_estimate_db": 21.949640210356172,
+            "angle_deg": 1.1822625730677754
+          },
+          {
+            "range_m": 1.2037243869401149,
+            "radial_velocity_mps": -0.3376962595466996,
+            "snr_estimate_db": 15.970600471533732,
+            "angle_deg": 3.298904355398167
+          },
+          {
+            "range_m": 2.970819007470168,
+            "radial_velocity_mps": 1.6290291386349133e-05,
+            "snr_estimate_db": 14.333520510113507,
+            "angle_deg": -16.88178918887894
+          },
+          {
+            "range_m": 4.348208171905541,
+            "radial_velocity_mps": -0.0005000897101424685,
+            "snr_estimate_db": 16.91652340823943,
+            "angle_deg": 20.904637019204237
+          },
+          {
+            "range_m": 4.5230109035471795,
+            "radial_velocity_mps": 0.0006284098968203148,
+            "snr_estimate_db": 11.679036569339052,
+            "angle_deg": 22.588304076284505
+          },
+          {
+            "range_m": 6.682366749605626,
+            "radial_velocity_mps": 0.00017888156964180384,
+            "snr_estimate_db": 19.123232414288637,
+            "angle_deg": 53.49578656150727
+          }
+        ]
+      },
+      {
+        "frame": 42,
+        "num_detections": 10,
+        "detections": [
+          {
+            "range_m": 1.26240242262248,
+            "radial_velocity_mps": 0.00014475419967345545,
+            "snr_estimate_db": 16.551897749797295,
+            "angle_deg": 27.13538672006162
+          },
+          {
+            "range_m": 0.713320436567846,
+            "radial_velocity_mps": 6.612422823084992e-05,
+            "snr_estimate_db": 13.799584401474831,
+            "angle_deg": -26.173591850871055
+          },
+          {
+            "range_m": 1.1102420289737915,
+            "radial_velocity_mps": -0.1731249735658513,
+            "snr_estimate_db": 17.10161375151605,
+            "angle_deg": 1.0806599478324483
+          },
+          {
+            "range_m": 2.9706798292974277,
+            "radial_velocity_mps": -1.1358238208467363e-05,
+            "snr_estimate_db": 14.517972026648494,
+            "angle_deg": -16.909700183120933
+          },
+          {
+            "range_m": 4.349001902438222,
+            "radial_velocity_mps": 0.0002316047112408778,
+            "snr_estimate_db": 18.18681987500302,
+            "angle_deg": 21.30172026847896
+          },
+          {
+            "range_m": 1.1266154930440684,
+            "radial_velocity_mps": -0.9678545810073413,
+            "snr_estimate_db": 17.15185653451574,
+            "angle_deg": 1.8937532881852863
+          },
+          {
+            "range_m": 4.520306161469319,
+            "radial_velocity_mps": -0.0002048099396347767,
+            "snr_estimate_db": 12.093949872580277,
+            "angle_deg": 22.983875708022083
+          },
+          {
+            "range_m": 6.684990184572235,
+            "radial_velocity_mps": -0.0003899759791393101,
+            "snr_estimate_db": 19.26452338067939,
+            "angle_deg": 53.75322383494617
+          },
+          {
+            "range_m": 1.119215199506701,
+            "radial_velocity_mps": -0.8950215755947715,
+            "snr_estimate_db": 13.372765499932036,
+            "angle_deg": 2.8441527063920238
+          },
+          {
+            "range_m": 1.10048884146814,
+            "radial_velocity_mps": -1.2634221228851121,
+            "snr_estimate_db": 10.851331070206518,
+            "angle_deg": 6.89571203912754
+          }
+        ]
+      },
+      {
+        "frame": 43,
+        "num_detections": 10,
+        "detections": [
+          {
+            "range_m": 1.2632153264133748,
+            "radial_velocity_mps": -4.385492533301237e-05,
+            "snr_estimate_db": 16.28434980764438,
+            "angle_deg": 27.10137531029289
+          },
+          {
+            "range_m": 0.7133183167141464,
+            "radial_velocity_mps": 7.0758841771537e-05,
+            "snr_estimate_db": 13.92777365183499,
+            "angle_deg": -26.12507600438816
+          },
+          {
+            "range_m": 0.49426153499249226,
+            "radial_velocity_mps": 6.699546937312487e-05,
+            "snr_estimate_db": 10.845335730671477,
+            "angle_deg": -44.03466592984661
+          },
+          {
+            "range_m": 0.9661881453587821,
+            "radial_velocity_mps": -0.23157386325025892,
+            "snr_estimate_db": 23.720328501469076,
+            "angle_deg": 3.775542234447969
+          },
+          {
+            "range_m": 2.970166045583938,
+            "radial_velocity_mps": -0.0003599348011219618,
+            "snr_estimate_db": 15.495953656552778,
+            "angle_deg": -17.043494033712406
+          },
+          {
+            "range_m": 4.347451049080973,
+            "radial_velocity_mps": -0.003515423854238247,
+            "snr_estimate_db": 17.334502309350963,
+            "angle_deg": 20.791332420805862
+          },
+          {
+            "range_m": 4.534304740092268,
+            "radial_velocity_mps": -0.0007205280384579025,
+            "snr_estimate_db": 10.980450263039481,
+            "angle_deg": 21.851439287599497
+          },
+          {
+            "range_m": 6.681136452359429,
+            "radial_velocity_mps": 0.0004224332888560663,
+            "snr_estimate_db": 19.274405180041654,
+            "angle_deg": 53.76609995277378
+          },
+          {
+            "range_m": 1.5705576571666455,
+            "radial_velocity_mps": 0.19888975123406638,
+            "snr_estimate_db": 11.450646437048295,
+            "angle_deg": -9.143371832065279
+          },
+          {
+            "range_m": 1.0099268372186323,
+            "radial_velocity_mps": -1.1127876028018842,
+            "snr_estimate_db": 13.643237704229282,
+            "angle_deg": -0.4487218077934314
+          }
+        ]
+      },
+      {
+        "frame": 44,
+        "num_detections": 11,
+        "detections": [
+          {
+            "range_m": 1.2613686201754066,
+            "radial_velocity_mps": 0.0004497822853233712,
+            "snr_estimate_db": 16.43494689824723,
+            "angle_deg": 27.355588376129923
+          },
+          {
+            "range_m": 0.7134794951391176,
+            "radial_velocity_mps": -4.656368599366029e-05,
+            "snr_estimate_db": 13.625011662691078,
+            "angle_deg": -26.229024628206556
+          },
+          {
+            "range_m": 0.8083470550121877,
+            "radial_velocity_mps": -0.3865173360178053,
+            "snr_estimate_db": 19.503702736010112,
+            "angle_deg": 2.2577281473083493
+          },
+          {
+            "range_m": 2.9654635143935666,
+            "radial_velocity_mps": -0.0005228551504869934,
+            "snr_estimate_db": 14.648391573896312,
+            "angle_deg": -17.180010988526245
+          },
+          {
+            "range_m": 1.4937181727822577,
+            "radial_velocity_mps": 0.21727359821271472,
+            "snr_estimate_db": 12.628959712676783,
+            "angle_deg": 5.674190177521193
+          },
+          {
+            "range_m": 4.344935586109568,
+            "radial_velocity_mps": 0.0003923903934662685,
+            "snr_estimate_db": 16.847673315980384,
+            "angle_deg": 20.802493625378816
+          },
+          {
+            "range_m": 2.8578954974180126,
+            "radial_velocity_mps": -0.4209634935774296,
+            "snr_estimate_db": 13.982886727084798,
+            "angle_deg": -49.545468015281955
+          },
+          {
+            "range_m": 1.9273663967790915,
+            "radial_velocity_mps": 0.3618564797317252,
+            "snr_estimate_db": 15.162963665595122,
+            "angle_deg": -18.710792121947676
+          },
+          {
+            "range_m": 4.522919367838908,
+            "radial_velocity_mps": 0.0006331331704846711,
+            "snr_estimate_db": 12.104509600659794,
+            "angle_deg": 20.47254875551353
+          },
+          {
+            "range_m": 1.7546530660111097,
+            "radial_velocity_mps": -0.8686691758673726,
+            "snr_estimate_db": 15.012693298933065,
+            "angle_deg": 4.596930327961157
+          },
+          {
+            "range_m": 6.684208893880205,
+            "radial_velocity_mps": -0.0002282767183724146,
+            "snr_estimate_db": 19.637606079301978,
+            "angle_deg": 53.76317663546198
+          }
+        ]
+      },
+      {
+        "frame": 45,
+        "num_detections": 16,
+        "detections": [
+          {
+            "range_m": 1.2644332770059539,
+            "radial_velocity_mps": -0.0023989298689164056,
+            "snr_estimate_db": 17.20977134194644,
+            "angle_deg": 27.75031034603281
+          },
+          {
+            "range_m": 0.7124780985206325,
+            "radial_velocity_mps": 4.1304769968732974e-05,
+            "snr_estimate_db": 13.08779510201112,
+            "angle_deg": -26.297701057865332
+          },
+          {
+            "range_m": 0.5926257416764216,
+            "radial_velocity_mps": -0.4834529178718901,
+            "snr_estimate_db": 21.093367377053784,
+            "angle_deg": 7.176434920893773
+          },
+          {
+            "range_m": 0.7943971617718504,
+            "radial_velocity_mps": -0.23228474079565856,
+            "snr_estimate_db": 15.273888386376502,
+            "angle_deg": -6.55929584920444
+          },
+          {
+            "range_m": 0.8086413102358312,
+            "radial_velocity_mps": -0.16745489570365496,
+            "snr_estimate_db": 14.205735978404109,
+            "angle_deg": -5.700192238156641
+          },
+          {
+            "range_m": 0.6312692236614125,
+            "radial_velocity_mps": -0.7268481094428391,
+            "snr_estimate_db": 16.09796127498467,
+            "angle_deg": -0.8065683972056117
+          },
+          {
+            "range_m": 2.967508218678021,
+            "radial_velocity_mps": 0.001999009319959925,
+            "snr_estimate_db": 16.785053044377648,
+            "angle_deg": -17.58929310168822
+          },
+          {
+            "range_m": 1.213692271185796,
+            "radial_velocity_mps": 0.17797683929752692,
+            "snr_estimate_db": 14.719839439936575,
+            "angle_deg": 46.41927484599856
+          },
+          {
+            "range_m": 1.3812931175029792,
+            "radial_velocity_mps": -0.6186637329411583,
+            "snr_estimate_db": 13.093588685815993,
+            "angle_deg": 66.75862867573242
+          },
+          {
+            "range_m": 0.9795942683446182,
+            "radial_velocity_mps": -1.1658026703223976,
+            "snr_estimate_db": 14.794870966741755,
+            "angle_deg": -1.48306640595939
+          },
+          {
+            "range_m": 0.9767534003605324,
+            "radial_velocity_mps": -1.007429552304658,
+            "snr_estimate_db": 12.027824597933032,
+            "angle_deg": 0.8933808165129964
+          },
+          {
+            "range_m": 0.9466587941532236,
+            "radial_velocity_mps": -1.0658515025059379,
+            "snr_estimate_db": 11.38459815084741,
+            "angle_deg": 1.216487797836514
+          },
+          {
+            "range_m": 4.341755345163088,
+            "radial_velocity_mps": 0.000644846167093904,
+            "snr_estimate_db": 17.36451900787413,
+            "angle_deg": 20.553795822177396
+          },
+          {
+            "range_m": 2.2238474838685507,
+            "radial_velocity_mps": 0.5121364869310798,
+            "snr_estimate_db": 12.952621082774662,
+            "angle_deg": -19.51891926641174
+          },
+          {
+            "range_m": 4.516485483117174,
+            "radial_velocity_mps": 0.0009691119340248947,
+            "snr_estimate_db": 13.598807472741521,
+            "angle_deg": 19.949934204893363
+          },
+          {
+            "range_m": 6.685665582722293,
+            "radial_velocity_mps": -3.77128619740827e-05,
+            "snr_estimate_db": 19.80015775963932,
+            "angle_deg": 53.24338185656933
+          }
+        ]
+      },
+      {
+        "frame": 46,
+        "num_detections": 7,
+        "detections": [
+          {
+            "range_m": 0.7171830979546897,
+            "radial_velocity_mps": 0.0029973868416288546,
+            "snr_estimate_db": 14.321977696266934,
+            "angle_deg": -27.49158138862183
+          },
+          {
+            "range_m": 1.2603203078237712,
+            "radial_velocity_mps": -0.0013821751221509686,
+            "snr_estimate_db": 15.080304759072547,
+            "angle_deg": 27.673037637741054
+          },
+          {
+            "range_m": 1.078601834850495,
+            "radial_velocity_mps": 0.34089540741348584,
+            "snr_estimate_db": 20.736884700784262,
+            "angle_deg": -17.389368809309175
+          },
+          {
+            "range_m": 6.682692769964344,
+            "radial_velocity_mps": 0.0006922617958911028,
+            "snr_estimate_db": 19.125459800725444,
+            "angle_deg": 52.93313357143932
+          },
+          {
+            "range_m": 4.324577162954002,
+            "radial_velocity_mps": -0.005845870217816544,
+            "snr_estimate_db": 13.413659534767387,
+            "angle_deg": 19.92979324507144
+          },
+          {
+            "range_m": 4.4810970186211,
+            "radial_velocity_mps": 0.0022762354181570976,
+            "snr_estimate_db": 12.705052965329045,
+            "angle_deg": 20.999471714901937
+          },
+          {
+            "range_m": 2.700458695495605,
+            "radial_velocity_mps": 0.331159047177313,
+            "snr_estimate_db": 11.91524304905801,
+            "angle_deg": -23.08290933684364
+          }
+        ]
+      },
+      {
+        "frame": 47,
+        "num_detections": 7,
+        "detections": [
+          {
+            "range_m": 0.7109697995587084,
+            "radial_velocity_mps": 5.528086858824062e-05,
+            "snr_estimate_db": 14.171520269233293,
+            "angle_deg": -26.325975843458263
+          },
+          {
+            "range_m": 1.2678289871004276,
+            "radial_velocity_mps": 0.0006229941179187878,
+            "snr_estimate_db": 15.684614519182439,
+            "angle_deg": 27.28924998409078
+          },
+          {
+            "range_m": 0.49480541788431065,
+            "radial_velocity_mps": 7.783735820532042e-05,
+            "snr_estimate_db": 11.17188179206089,
+            "angle_deg": -43.99064981699436
+          },
+          {
+            "range_m": 2.964415049745327,
+            "radial_velocity_mps": -0.0035765346281424024,
+            "snr_estimate_db": 11.665350059547466,
+            "angle_deg": -16.780694542313583
+          },
+          {
+            "range_m": 0.6595342017033707,
+            "radial_velocity_mps": -0.3839792363167707,
+            "snr_estimate_db": 12.931556331997829,
+            "angle_deg": -5.838491540493596
+          },
+          {
+            "range_m": 6.684501640597059,
+            "radial_velocity_mps": -0.0001857098516347005,
+            "snr_estimate_db": 19.006209530627018,
+            "angle_deg": 53.22863577061343
+          },
+          {
+            "range_m": 4.472001710996487,
+            "radial_velocity_mps": 0.0025194965445766893,
+            "snr_estimate_db": 12.39381031356862,
+            "angle_deg": 21.45901630145552
+          }
+        ]
+      },
+      {
+        "frame": 48,
+        "num_detections": 6,
+        "detections": [
+          {
+            "range_m": 1.2549081963344006,
+            "radial_velocity_mps": 6.016765718962008e-05,
+            "snr_estimate_db": 16.697378886504247,
+            "angle_deg": 26.31297273656702
+          },
+          {
+            "range_m": 0.7105994185038992,
+            "radial_velocity_mps": 0.0003249675863891198,
+            "snr_estimate_db": 13.901329154093222,
+            "angle_deg": -27.28807984454896
+          },
+          {
+            "range_m": 0.48908830588804775,
+            "radial_velocity_mps": -0.0009654744761812971,
+            "snr_estimate_db": 11.681772262280425,
+            "angle_deg": -44.80707709683011
+          },
+          {
+            "range_m": 2.95733663829903,
+            "radial_velocity_mps": 0.0001263488135054955,
+            "snr_estimate_db": 17.9717409172271,
+            "angle_deg": -18.236536835338594
+          },
+          {
+            "range_m": 4.34377383997357,
+            "radial_velocity_mps": -0.0005510099413405602,
+            "snr_estimate_db": 16.13951029393893,
+            "angle_deg": 19.800024505388684
+          },
+          {
+            "range_m": 6.682035103373209,
+            "radial_velocity_mps": -6.774175833758244e-05,
+            "snr_estimate_db": 18.374016431407654,
+            "angle_deg": 54.26127847008942
+          }
+        ]
+      },
+      {
+        "frame": 49,
+        "num_detections": 7,
+        "detections": [
+          {
+            "range_m": 1.2487328357736367,
+            "radial_velocity_mps": 0.00024354975473037785,
+            "snr_estimate_db": 16.20365426211962,
+            "angle_deg": 27.617392667177416
+          },
+          {
+            "range_m": 0.7123543363088016,
+            "radial_velocity_mps": 0.00013894629576146356,
+            "snr_estimate_db": 14.839684172223711,
+            "angle_deg": -25.704419297429883
+          },
+          {
+            "range_m": 0.48605047003535706,
+            "radial_velocity_mps": 0.00038951551755561187,
+            "snr_estimate_db": 11.840195368231496,
+            "angle_deg": -44.575549418069215
+          },
+          {
+            "range_m": 2.96445468534166,
+            "radial_velocity_mps": 3.7985452395881075e-05,
+            "snr_estimate_db": 18.585917437100658,
+            "angle_deg": -17.789461825792724
+          },
+          {
+            "range_m": 4.34253866195717,
+            "radial_velocity_mps": 0.0005414762706986128,
+            "snr_estimate_db": 16.592185430464742,
+            "angle_deg": 20.058723600239833
+          },
+          {
+            "range_m": 4.5114775968710825,
+            "radial_velocity_mps": 0.0010672311964926829,
+            "snr_estimate_db": 14.875760166755626,
+            "angle_deg": 20.879132618097987
+          },
+          {
+            "range_m": 6.686214356354986,
+            "radial_velocity_mps": 0.0003546576005092757,
+            "snr_estimate_db": 19.843380460881043,
+            "angle_deg": 52.87523932897417
+          }
+        ]
+      },
+      {
+        "frame": 50,
+        "num_detections": 6,
+        "detections": [
+          {
+            "range_m": 1.2534086969182507,
+            "radial_velocity_mps": 5.194300910160299e-05,
+            "snr_estimate_db": 16.790996358239443,
+            "angle_deg": 25.873327791329082
+          },
+          {
+            "range_m": 0.7144282573841507,
+            "radial_velocity_mps": -0.0001460253932635227,
+            "snr_estimate_db": 14.823197696095,
+            "angle_deg": -25.38369049430886
+          },
+          {
+            "range_m": 2.956958122752725,
+            "radial_velocity_mps": -8.029975337333544e-06,
+            "snr_estimate_db": 17.39361807916169,
+            "angle_deg": -17.807865334272865
+          },
+          {
+            "range_m": 4.3439980827639815,
+            "radial_velocity_mps": 0.00034359635283761746,
+            "snr_estimate_db": 16.994436710469614,
+            "angle_deg": 20.238788695933586
+          },
+          {
+            "range_m": 4.516374800779244,
+            "radial_velocity_mps": 0.007144086970984811,
+            "snr_estimate_db": 14.561596969871225,
+            "angle_deg": 22.514924696792264
+          },
+          {
+            "range_m": 6.685336350297977,
+            "radial_velocity_mps": -0.00014115076458071232,
+            "snr_estimate_db": 18.692437671408108,
+            "angle_deg": 52.89849978263617
+          }
+        ]
+      },
+      {
+        "frame": 51,
+        "num_detections": 8,
+        "detections": [
+          {
+            "range_m": 0.7126361246506349,
+            "radial_velocity_mps": 8.54918032280749e-05,
+            "snr_estimate_db": 17.408391879491415,
+            "angle_deg": -26.068746197843467
+          },
+          {
+            "range_m": 0.49444351630933064,
+            "radial_velocity_mps": 4.990665310582245e-05,
+            "snr_estimate_db": 13.264358219815636,
+            "angle_deg": -44.03833146745943
+          },
+          {
+            "range_m": 1.3873632962029845,
+            "radial_velocity_mps": 0.00040960465367944964,
+            "snr_estimate_db": 11.62174369107473,
+            "angle_deg": -12.740360104310026
+          },
+          {
+            "range_m": 0.7929106978544229,
+            "radial_velocity_mps": 0.1863510948521753,
+            "snr_estimate_db": 17.213575581329994,
+            "angle_deg": -14.498447488120586
+          },
+          {
+            "range_m": 1.4185668783110796,
+            "radial_velocity_mps": -0.2810928308620907,
+            "snr_estimate_db": 12.970437657769152,
+            "angle_deg": 47.603744669392846
+          },
+          {
+            "range_m": 6.679274584727081,
+            "radial_velocity_mps": 0.0002758611421710121,
+            "snr_estimate_db": 22.28522014334661,
+            "angle_deg": 51.95257162116047
+          },
+          {
+            "range_m": 1.4506635083847925,
+            "radial_velocity_mps": -0.5119477133458328,
+            "snr_estimate_db": 14.949006438266334,
+            "angle_deg": 43.086830922954874
+          },
+          {
+            "range_m": 1.413244435494102,
+            "radial_velocity_mps": -0.6912039863612658,
+            "snr_estimate_db": 12.676222535760314,
+            "angle_deg": 41.61264567924476
+          }
+        ]
+      },
+      {
+        "frame": 52,
+        "num_detections": 13,
+        "detections": [
+          {
+            "range_m": 1.2631741716258595,
+            "radial_velocity_mps": 0.0009697598180497405,
+            "snr_estimate_db": 16.317354062627025,
+            "angle_deg": 27.477224674400944
+          },
+          {
+            "range_m": 0.7150459031983892,
+            "radial_velocity_mps": 0.0002477088965851898,
+            "snr_estimate_db": 14.371391544152099,
+            "angle_deg": -26.51214155019264
+          },
+          {
+            "range_m": 0.4944770952395232,
+            "radial_velocity_mps": 9.622487799340046e-05,
+            "snr_estimate_db": 11.12177439616608,
+            "angle_deg": -44.0368488884643
+          },
+          {
+            "range_m": 1.1201962632585334,
+            "radial_velocity_mps": -0.31432620602155037,
+            "snr_estimate_db": 16.9304121848332,
+            "angle_deg": -15.215777513675302
+          },
+          {
+            "range_m": 0.9172623677613423,
+            "radial_velocity_mps": 0.16987704864185524,
+            "snr_estimate_db": 11.495156246576116,
+            "angle_deg": 29.502742658501596
+          },
+          {
+            "range_m": 1.2366981978187137,
+            "radial_velocity_mps": -0.1821675248698674,
+            "snr_estimate_db": 13.300603834526772,
+            "angle_deg": -16.53783140380808
+          },
+          {
+            "range_m": 1.7633286183025425,
+            "radial_velocity_mps": 0.25423422182028677,
+            "snr_estimate_db": 11.532051178164496,
+            "angle_deg": -35.00326670327548
+          },
+          {
+            "range_m": 1.360078901313571,
+            "radial_velocity_mps": 0.37899761686561473,
+            "snr_estimate_db": 11.59853614511933,
+            "angle_deg": 19.38457748486846
+          },
+          {
+            "range_m": 0.8811046706916937,
+            "radial_velocity_mps": 0.706665570573424,
+            "snr_estimate_db": 19.128170288319915,
+            "angle_deg": 13.20347572075423
+          },
+          {
+            "range_m": 1.2058433958556611,
+            "radial_velocity_mps": -0.4856183377665008,
+            "snr_estimate_db": 17.095279345843228,
+            "angle_deg": -17.626665011801602
+          },
+          {
+            "range_m": 2.4726662533657446,
+            "radial_velocity_mps": 0.5186781366272385,
+            "snr_estimate_db": 11.20720863040119,
+            "angle_deg": -37.85294182933498
+          },
+          {
+            "range_m": 6.683777524543364,
+            "radial_velocity_mps": 0.0006771208660654776,
+            "snr_estimate_db": 19.745681294947612,
+            "angle_deg": 53.093587164229135
+          },
+          {
+            "range_m": 4.54176697456149,
+            "radial_velocity_mps": -7.912591425894006e-05,
+            "snr_estimate_db": 11.076700914989392,
+            "angle_deg": -20.62883384089185
+          }
+        ]
+      },
+      {
+        "frame": 53,
+        "num_detections": 16,
+        "detections": [
+          {
+            "range_m": 0.7136836885566227,
+            "radial_velocity_mps": -0.0003525126320962197,
+            "snr_estimate_db": 13.86298300854719,
+            "angle_deg": -25.99117512659178
+          },
+          {
+            "range_m": 1.268030464024006,
+            "radial_velocity_mps": 0.0006366938468604569,
+            "snr_estimate_db": 15.730022451395742,
+            "angle_deg": 26.574932391276644
+          },
+          {
+            "range_m": 0.5848168304435581,
+            "radial_velocity_mps": 0.25824307910368766,
+            "snr_estimate_db": 19.687347363006985,
+            "angle_deg": 3.9211988966195395
+          },
+          {
+            "range_m": 0.5698738439931753,
+            "radial_velocity_mps": 0.7135987906741977,
+            "snr_estimate_db": 24.624894813442857,
+            "angle_deg": -2.633284769689969
+          },
+          {
+            "range_m": 0.5830299752987702,
+            "radial_velocity_mps": 0.5428612721429198,
+            "snr_estimate_db": 13.480949083791096,
+            "angle_deg": -2.0280501334126697
+          },
+          {
+            "range_m": 0.9960541456326701,
+            "radial_velocity_mps": -0.38907484990700286,
+            "snr_estimate_db": 15.059606776979141,
+            "angle_deg": -11.927058098987327
+          },
+          {
+            "range_m": 0.9410840634507479,
+            "radial_velocity_mps": -0.5914737405151925,
+            "snr_estimate_db": 15.306674821519682,
+            "angle_deg": -12.659402589183502
+          },
+          {
+            "range_m": 0.9415826392457982,
+            "radial_velocity_mps": -0.6737472383773085,
+            "snr_estimate_db": 15.054427868565464,
+            "angle_deg": -15.068315044309232
+          },
+          {
+            "range_m": 1.5911933996085958,
+            "radial_velocity_mps": 0.7488368045630758,
+            "snr_estimate_db": 14.728900254686605,
+            "angle_deg": -0.3150656807621621
+          },
+          {
+            "range_m": 3.508876797111211,
+            "radial_velocity_mps": -0.00036765829217453905,
+            "snr_estimate_db": 11.488657077586101,
+            "angle_deg": -21.82682298662379
+          },
+          {
+            "range_m": 1.5947633759533817,
+            "radial_velocity_mps": 0.6857194005228239,
+            "snr_estimate_db": 13.860024258257397,
+            "angle_deg": -8.87527606681812
+          },
+          {
+            "range_m": 4.346736495283888,
+            "radial_velocity_mps": 0.00020386728292894627,
+            "snr_estimate_db": 18.47781374643875,
+            "angle_deg": 20.406804684573675
+          },
+          {
+            "range_m": 4.5202612403853015,
+            "radial_velocity_mps": 8.929610910372595e-06,
+            "snr_estimate_db": 12.581209702376576,
+            "angle_deg": 20.391834572445244
+          },
+          {
+            "range_m": 6.680923226118128,
+            "radial_velocity_mps": -0.000264053506081743,
+            "snr_estimate_db": 19.280134496784257,
+            "angle_deg": 53.814758862820725
+          },
+          {
+            "range_m": 1.4242696849816525,
+            "radial_velocity_mps": 1.0120691150540886,
+            "snr_estimate_db": 12.136450910949687,
+            "angle_deg": 0.8016867133640289
+          },
+          {
+            "range_m": 1.0019587157339442,
+            "radial_velocity_mps": -0.9002759536649183,
+            "snr_estimate_db": 12.255961940546204,
+            "angle_deg": -19.3947006362216
+          }
+        ]
+      },
+      {
+        "frame": 54,
+        "num_detections": 12,
+        "detections": [
+          {
+            "range_m": 1.2642796830972403,
+            "radial_velocity_mps": 0.0010568137037274313,
+            "snr_estimate_db": 16.843655255953937,
+            "angle_deg": 27.962532972577517
+          },
+          {
+            "range_m": 0.7138698327707186,
+            "radial_velocity_mps": 3.723354578717343e-05,
+            "snr_estimate_db": 13.301735699217495,
+            "angle_deg": -26.37234806536802
+          },
+          {
+            "range_m": 0.7718489138200999,
+            "radial_velocity_mps": 0.3248333961577217,
+            "snr_estimate_db": 21.738997401152012,
+            "angle_deg": -0.0549654980709957
+          },
+          {
+            "range_m": 2.968912376667948,
+            "radial_velocity_mps": 1.8795834645970433e-05,
+            "snr_estimate_db": 15.334587836392945,
+            "angle_deg": -16.881361826944314
+          },
+          {
+            "range_m": 0.8457504199845792,
+            "radial_velocity_mps": 0.6712775212437178,
+            "snr_estimate_db": 24.010487947996992,
+            "angle_deg": -1.2188321184194721
+          },
+          {
+            "range_m": 0.871596168108708,
+            "radial_velocity_mps": 0.5120075168114788,
+            "snr_estimate_db": 11.043318185946347,
+            "angle_deg": 0.5697332455309779
+          },
+          {
+            "range_m": 1.7455766072885224,
+            "radial_velocity_mps": 0.5557825196827703,
+            "snr_estimate_db": 14.456402526055891,
+            "angle_deg": 3.824254072814243
+          },
+          {
+            "range_m": 4.348265524464301,
+            "radial_velocity_mps": -9.435954315589948e-05,
+            "snr_estimate_db": 18.05397022190818,
+            "angle_deg": 20.30823555441609
+          },
+          {
+            "range_m": 0.8528637493954881,
+            "radial_velocity_mps": -0.21353120128808384,
+            "snr_estimate_db": 12.159937425044657,
+            "angle_deg": -5.918680437394612
+          },
+          {
+            "range_m": 6.682763485627303,
+            "radial_velocity_mps": -4.8273795477882e-06,
+            "snr_estimate_db": 20.00310841524794,
+            "angle_deg": 53.37749500304309
+          },
+          {
+            "range_m": 4.519473136719313,
+            "radial_velocity_mps": 0.0013247430659032058,
+            "snr_estimate_db": 12.28490798925071,
+            "angle_deg": 19.23328365643701
+          },
+          {
+            "range_m": 0.8746232382497529,
+            "radial_velocity_mps": 1.2012651088259532,
+            "snr_estimate_db": 12.957345446976545,
+            "angle_deg": 2.1426492594329436
+          }
+        ]
+      },
+      {
+        "frame": 55,
+        "num_detections": 12,
+        "detections": [
+          {
+            "range_m": 1.2659369138367673,
+            "radial_velocity_mps": -0.0001687900359224846,
+            "snr_estimate_db": 16.698054188808054,
+            "angle_deg": 27.53850063346047
+          },
+          {
+            "range_m": 0.7133580725748294,
+            "radial_velocity_mps": 0.00011633600764690516,
+            "snr_estimate_db": 13.505845338841183,
+            "angle_deg": -26.06292675426027
+          },
+          {
+            "range_m": 0.9061841048365945,
+            "radial_velocity_mps": 0.31124511135997945,
+            "snr_estimate_db": 16.015127833258372,
+            "angle_deg": -3.500501883701122
+          },
+          {
+            "range_m": 0.9053079467948058,
+            "radial_velocity_mps": 0.2543683484372445,
+            "snr_estimate_db": 13.273011394352821,
+            "angle_deg": -3.4230152252919357
+          },
+          {
+            "range_m": 1.0111351783714682,
+            "radial_velocity_mps": 0.6689847576740726,
+            "snr_estimate_db": 20.52250413138456,
+            "angle_deg": -4.103148100920084
+          },
+          {
+            "range_m": 2.967437337890207,
+            "radial_velocity_mps": 0.0002520831049667488,
+            "snr_estimate_db": 14.696433301585394,
+            "angle_deg": -16.955413447193596
+          },
+          {
+            "range_m": 1.774957785223422,
+            "radial_velocity_mps": -0.3200641628876906,
+            "snr_estimate_db": 16.86378341311951,
+            "angle_deg": -18.94593058472495
+          },
+          {
+            "range_m": 1.7863051728697623,
+            "radial_velocity_mps": -0.37534793866700944,
+            "snr_estimate_db": 15.957315211938932,
+            "angle_deg": -16.557573022184574
+          },
+          {
+            "range_m": 1.77419381039192,
+            "radial_velocity_mps": -0.2437237942901804,
+            "snr_estimate_db": 12.487959897094857,
+            "angle_deg": -19.852112445259262
+          },
+          {
+            "range_m": 4.3476339352469475,
+            "radial_velocity_mps": 0.00019270655520954572,
+            "snr_estimate_db": 16.679642720763617,
+            "angle_deg": 21.256618854583994
+          },
+          {
+            "range_m": 4.5182386287271115,
+            "radial_velocity_mps": -0.00015363086740198146,
+            "snr_estimate_db": 10.81698842329055,
+            "angle_deg": 21.668487918653984
+          },
+          {
+            "range_m": 6.6848090380130785,
+            "radial_velocity_mps": 0.0007087165988648177,
+            "snr_estimate_db": 18.959042497069415,
+            "angle_deg": 53.29328582304994
+          }
+        ]
+      },
+      {
+        "frame": 56,
+        "num_detections": 6,
+        "detections": [
+          {
+            "range_m": 1.2576156808437355,
+            "radial_velocity_mps": -0.0001540909672325787,
+            "snr_estimate_db": 16.23492832991245,
+            "angle_deg": 27.465719362838538
+          },
+          {
+            "range_m": 0.7128749930851618,
+            "radial_velocity_mps": 0.00014037957916875,
+            "snr_estimate_db": 14.524054261934756,
+            "angle_deg": -26.779141929544185
+          },
+          {
+            "range_m": 2.969232377479937,
+            "radial_velocity_mps": -6.998616035433387e-05,
+            "snr_estimate_db": 14.66814305382566,
+            "angle_deg": -17.26248040525856
+          },
+          {
+            "range_m": 4.354114939557235,
+            "radial_velocity_mps": 0.00020380004203929822,
+            "snr_estimate_db": 17.63294885604276,
+            "angle_deg": 21.61398626251041
+          },
+          {
+            "range_m": 4.516372363886951,
+            "radial_velocity_mps": 0.0010579627599301227,
+            "snr_estimate_db": 12.736026275895476,
+            "angle_deg": 22.74223954071227
+          },
+          {
+            "range_m": 6.686386084624943,
+            "radial_velocity_mps": 0.0008389352221889935,
+            "snr_estimate_db": 18.859469733168797,
+            "angle_deg": 53.13665252155845
+          }
+        ]
+      },
+      {
+        "frame": 57,
+        "num_detections": 9,
+        "detections": [
+          {
+            "range_m": 1.2578934779323678,
+            "radial_velocity_mps": 5.8066029654943394e-05,
+            "snr_estimate_db": 15.925476496066018,
+            "angle_deg": 27.629471103080377
+          },
+          {
+            "range_m": 0.7133623788674862,
+            "radial_velocity_mps": 3.604495065322761e-05,
+            "snr_estimate_db": 14.314072597484033,
+            "angle_deg": -25.662713405337144
+          },
+          {
+            "range_m": 2.974103253068125,
+            "radial_velocity_mps": 0.00026820021177212253,
+            "snr_estimate_db": 15.874623578802494,
+            "angle_deg": -17.64648596063757
+          },
+          {
+            "range_m": 0.8861874073753102,
+            "radial_velocity_mps": 0.4848426145268065,
+            "snr_estimate_db": 18.19082723621466,
+            "angle_deg": -17.130789326110374
+          },
+          {
+            "range_m": 4.35375643463106,
+            "radial_velocity_mps": 0.00048132885969867325,
+            "snr_estimate_db": 18.05407188290259,
+            "angle_deg": 21.531460945974473
+          },
+          {
+            "range_m": 0.8830407662483559,
+            "radial_velocity_mps": -0.40521782891761793,
+            "snr_estimate_db": 15.330060675897393,
+            "angle_deg": -12.991607334367892
+          },
+          {
+            "range_m": 6.684242697373287,
+            "radial_velocity_mps": -0.00015800109808791827,
+            "snr_estimate_db": 18.821157133404473,
+            "angle_deg": 53.5207109008785
+          },
+          {
+            "range_m": 0.9164870240787903,
+            "radial_velocity_mps": 0.9770931080584616,
+            "snr_estimate_db": 12.578042756509438,
+            "angle_deg": -18.75219884594347
+          },
+          {
+            "range_m": 0.9436166058505638,
+            "radial_velocity_mps": 1.2014525740029742,
+            "snr_estimate_db": 12.086735962244484,
+            "angle_deg": -21.95496840496904
+          }
+        ]
+      },
+      {
+        "frame": 58,
+        "num_detections": 8,
+        "detections": [
+          {
+            "range_m": 1.2571070265493471,
+            "radial_velocity_mps": -0.00017938356057247646,
+            "snr_estimate_db": 16.30622291837043,
+            "angle_deg": 27.412840976393458
+          },
+          {
+            "range_m": 0.7128544475954606,
+            "radial_velocity_mps": 0.00019545367345110516,
+            "snr_estimate_db": 14.309073097315357,
+            "angle_deg": -25.614608844537276
+          },
+          {
+            "range_m": 0.49426146930065323,
+            "radial_velocity_mps": 8.204248371760884e-05,
+            "snr_estimate_db": 10.837072326064357,
+            "angle_deg": -44.01761240073571
+          },
+          {
+            "range_m": 2.9717344357210864,
+            "radial_velocity_mps": -0.00016038642304545025,
+            "snr_estimate_db": 15.391716956913209,
+            "angle_deg": -17.657052723580847
+          },
+          {
+            "range_m": 0.8365445954724697,
+            "radial_velocity_mps": -0.16308644373886647,
+            "snr_estimate_db": 14.575521276288,
+            "angle_deg": -19.131338623049825
+          },
+          {
+            "range_m": 4.352571253330734,
+            "radial_velocity_mps": 0.0003771356651988819,
+            "snr_estimate_db": 16.48505806572539,
+            "angle_deg": 21.381066713112588
+          },
+          {
+            "range_m": 4.516786949259673,
+            "radial_velocity_mps": -0.0005326196302295256,
+            "snr_estimate_db": 11.74748173317994,
+            "angle_deg": 21.96247750985434
+          },
+          {
+            "range_m": 6.681740978244114,
+            "radial_velocity_mps": 2.280803911590625e-05,
+            "snr_estimate_db": 19.123362594685062,
+            "angle_deg": 54.02492541700544
+          }
+        ]
+      },
+      {
+        "frame": 59,
+        "num_detections": 6,
+        "detections": [
+          {
+            "range_m": 1.2567479999888238,
+            "radial_velocity_mps": 0.0006702600593298911,
+            "snr_estimate_db": 16.27387436288824,
+            "angle_deg": 27.24750733729098
+          },
+          {
+            "range_m": 0.7133422112377936,
+            "radial_velocity_mps": 3.481220179085208e-05,
+            "snr_estimate_db": 14.347216790416917,
+            "angle_deg": -25.716161273561724
+          },
+          {
+            "range_m": 2.9724775331244433,
+            "radial_velocity_mps": 7.374212742703747e-05,
+            "snr_estimate_db": 16.13133802176524,
+            "angle_deg": -17.44842267686315
+          },
+          {
+            "range_m": 4.35230906076051,
+            "radial_velocity_mps": -0.0010237340094182352,
+            "snr_estimate_db": 17.064377829554115,
+            "angle_deg": 21.432229388128047
+          },
+          {
+            "range_m": 4.513508009616817,
+            "radial_velocity_mps": 0.0012797394851256744,
+            "snr_estimate_db": 11.429483665370457,
+            "angle_deg": 20.788048766115057
+          },
+          {
+            "range_m": 6.68632719075027,
+            "radial_velocity_mps": 0.00018211086420066196,
+            "snr_estimate_db": 18.953267983183387,
+            "angle_deg": 52.898056990929746
+          }
+        ]
+      },
+      {
+        "frame": 60,
+        "num_detections": 10,
+        "detections": [
+          {
+            "range_m": 1.2576409282250858,
+            "radial_velocity_mps": 0.00020465208320938016,
+            "snr_estimate_db": 16.331994815310896,
+            "angle_deg": 27.506114495080624
+          },
+          {
+            "range_m": 0.7139215102104047,
+            "radial_velocity_mps": -1.715063103709103e-05,
+            "snr_estimate_db": 14.401201921750948,
+            "angle_deg": -25.676546631425385
+          },
+          {
+            "range_m": 2.9695861907361016,
+            "radial_velocity_mps": 0.0004652017981247632,
+            "snr_estimate_db": 15.852463763970512,
+            "angle_deg": -17.58272294596125
+          },
+          {
+            "range_m": 0.9021657843947599,
+            "radial_velocity_mps": -0.25175184242470816,
+            "snr_estimate_db": 13.238541432363874,
+            "angle_deg": -18.359731795367427
+          },
+          {
+            "range_m": 1.2699738444765383,
+            "radial_velocity_mps": -0.16200295659624042,
+            "snr_estimate_db": 13.734899013173695,
+            "angle_deg": 41.44615496696286
+          },
+          {
+            "range_m": 4.353430082226878,
+            "radial_velocity_mps": -4.726089082120087e-05,
+            "snr_estimate_db": 16.69936202015889,
+            "angle_deg": 21.213158738867236
+          },
+          {
+            "range_m": 4.509811380744777,
+            "radial_velocity_mps": -0.0004900322364095133,
+            "snr_estimate_db": 12.265334622865687,
+            "angle_deg": 21.213086336550752
+          },
+          {
+            "range_m": 0.8601986157067837,
+            "radial_velocity_mps": -0.5685649728856221,
+            "snr_estimate_db": 11.993825067649572,
+            "angle_deg": -20.056977595030034
+          },
+          {
+            "range_m": 6.6837267893035435,
+            "radial_velocity_mps": 0.0006047097334869501,
+            "snr_estimate_db": 19.1546735442801,
+            "angle_deg": 53.68958522416291
+          },
+          {
+            "range_m": 0.8547188991229775,
+            "radial_velocity_mps": -0.7852206952440832,
+            "snr_estimate_db": 12.400340170943787,
+            "angle_deg": -19.431353499613724
+          }
+        ]
+      },
+      {
+        "frame": 61,
+        "num_detections": 10,
+        "detections": [
+          {
+            "range_m": 1.257419060197905,
+            "radial_velocity_mps": 9.404582486110817e-05,
+            "snr_estimate_db": 16.265191050372916,
+            "angle_deg": 27.455576387790828
+          },
+          {
+            "range_m": 0.7135515879125736,
+            "radial_velocity_mps": 2.1373225770802563e-05,
+            "snr_estimate_db": 14.34841614597625,
+            "angle_deg": -25.68775611541473
+          },
+          {
+            "range_m": 2.9717047450839793,
+            "radial_velocity_mps": 0.0006633636003016156,
+            "snr_estimate_db": 16.050533546250037,
+            "angle_deg": -17.54985239382814
+          },
+          {
+            "range_m": 0.83552967940694,
+            "radial_velocity_mps": -0.5506609391142915,
+            "snr_estimate_db": 17.49216210374747,
+            "angle_deg": -20.39557037594919
+          },
+          {
+            "range_m": 0.835035278819234,
+            "radial_velocity_mps": -0.46916436803679,
+            "snr_estimate_db": 10.881961196925827,
+            "angle_deg": -20.3367948204557
+          },
+          {
+            "range_m": 0.8488280799960232,
+            "radial_velocity_mps": -0.42406803617784616,
+            "snr_estimate_db": 11.43419462801562,
+            "angle_deg": -17.79386789223614
+          },
+          {
+            "range_m": 0.842438366292913,
+            "radial_velocity_mps": -0.3049046778209961,
+            "snr_estimate_db": 13.463230072890834,
+            "angle_deg": -18.786538732734694
+          },
+          {
+            "range_m": 4.353119379626787,
+            "radial_velocity_mps": 0.00028399241343958525,
+            "snr_estimate_db": 16.86787014154566,
+            "angle_deg": 21.35373018748106
+          },
+          {
+            "range_m": 4.514664724400003,
+            "radial_velocity_mps": -5.236411044509987e-05,
+            "snr_estimate_db": 11.906219440424605,
+            "angle_deg": 21.715800828127186
+          },
+          {
+            "range_m": 6.683426574120904,
+            "radial_velocity_mps": 0.0007148022706475149,
+            "snr_estimate_db": 18.782761833521285,
+            "angle_deg": 53.84524420209749
+          }
+        ]
+      },
+      {
+        "frame": 62,
+        "num_detections": 6,
+        "detections": [
+          {
+            "range_m": 1.2577947234019096,
+            "radial_velocity_mps": 1.2646030161441662e-05,
+            "snr_estimate_db": 16.30327254380971,
+            "angle_deg": 27.447200276489845
+          },
+          {
+            "range_m": 0.7130526157303306,
+            "radial_velocity_mps": -4.7935335785499904e-05,
+            "snr_estimate_db": 14.190369631786801,
+            "angle_deg": -25.84069455899954
+          },
+          {
+            "range_m": 2.9698909018786095,
+            "radial_velocity_mps": 0.00043567981853546083,
+            "snr_estimate_db": 16.308041353524136,
+            "angle_deg": -17.516803719087353
+          },
+          {
+            "range_m": 4.352905393470497,
+            "radial_velocity_mps": -0.0008229831571777596,
+            "snr_estimate_db": 17.01073127407631,
+            "angle_deg": 21.544157023477513
+          },
+          {
+            "range_m": 4.512453986449107,
+            "radial_velocity_mps": -0.0007944429287701444,
+            "snr_estimate_db": 11.465196325400779,
+            "angle_deg": 21.212655413342617
+          },
+          {
+            "range_m": 6.6846110524263835,
+            "radial_velocity_mps": 0.000337353562565855,
+            "snr_estimate_db": 19.18356044287403,
+            "angle_deg": 53.56260199532093
+          }
+        ]
+      },
+      {
+        "frame": 63,
+        "num_detections": 8,
+        "detections": [
+          {
+            "range_m": 1.2602240345391578,
+            "radial_velocity_mps": 0.00010060068008410789,
+            "snr_estimate_db": 16.382333943656924,
+            "angle_deg": 27.420059894726187
+          },
+          {
+            "range_m": 0.7134388979371689,
+            "radial_velocity_mps": -5.770345085905743e-05,
+            "snr_estimate_db": 14.05321161874454,
+            "angle_deg": -25.680318168528842
+          },
+          {
+            "range_m": 2.9708826008589537,
+            "radial_velocity_mps": -0.000234518117010717,
+            "snr_estimate_db": 16.356035839127216,
+            "angle_deg": -17.82178141698497
+          },
+          {
+            "range_m": 1.3171127493185006,
+            "radial_velocity_mps": 0.35084799641717923,
+            "snr_estimate_db": 17.1946754614454,
+            "angle_deg": 38.30558286891382
+          },
+          {
+            "range_m": 4.352712728996046,
+            "radial_velocity_mps": -0.0002567665233368679,
+            "snr_estimate_db": 17.267342700421864,
+            "angle_deg": 21.429354448908114
+          },
+          {
+            "range_m": 4.521125608492855,
+            "radial_velocity_mps": -0.00032394755628092697,
+            "snr_estimate_db": 12.118632460651968,
+            "angle_deg": 20.97045753543796
+          },
+          {
+            "range_m": 6.6841758084349605,
+            "radial_velocity_mps": 0.001064900648268195,
+            "snr_estimate_db": 19.194217095449396,
+            "angle_deg": 53.09469675251789
+          },
+          {
+            "range_m": 1.3588803183455773,
+            "radial_velocity_mps": 0.7658466842525574,
+            "snr_estimate_db": 11.109692298524417,
+            "angle_deg": -18.759824483115445
+          }
+        ]
+      }
+    ]
+  },
+  "stap": {
+    "look_angle_deg": 0.0,
+    "dimension": 1536,
+    "methods": {
+      "nonadaptive": {
+        "num_detections": 3,
+        "weight_seconds": 0.0013189000019337982,
+        "detections": [
+          {
+            "range_m": 0.878298216796875,
+            "radial_velocity_mps": -0.0994483753747155,
+            "output_snr_db": 17.483452607079798
+          },
+          {
+            "range_m": 0.5123406264648438,
+            "radial_velocity_mps": -0.198896750749431,
+            "output_snr_db": 19.505437159225764
+          },
+          {
+            "range_m": 4.757448674316406,
+            "radial_velocity_mps": 0.0,
+            "output_snr_db": 14.41893995135149
+          }
+        ]
+      },
+      "efa": {
+        "num_detections": 3,
+        "weight_seconds": 1.5175054999999702,
+        "detections": [
+          {
+            "range_m": 0.878298216796875,
+            "radial_velocity_mps": 0.0,
+            "output_snr_db": 14.41662999569219
+          },
+          {
+            "range_m": 1.1710642890625,
+            "radial_velocity_mps": 0.0994483753747155,
+            "output_snr_db": 16.99189035549796
+          },
+          {
+            "range_m": 0.58553214453125,
+            "radial_velocity_mps": -0.198896750749431,
+            "output_snr_db": 14.111602087814695
+          }
+        ]
+      }
+    }
+  }
+}
