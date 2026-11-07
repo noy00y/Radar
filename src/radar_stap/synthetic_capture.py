@@ -99,6 +99,8 @@ def make_synthetic_capture(
         "capture_format_verified": True,
         "adc_format": fmt_yaml,  # remaining fields come from synthetic.cfg
         "waveform": {"mmwave_cfg_file": "synthetic.cfg", "mixer_convention": radar.mixer_convention},
+        # synthetic multi-TX scenes are kept for regression tests of the TDM code path
+        "allow_multi_tx": len(set(cfg.array.tx_schedule)) > 1,
         "antenna": {
             "verified": True,
             "position_units": cfg.array.position_units,

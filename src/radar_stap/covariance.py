@@ -52,6 +52,16 @@ def hermitian_part(R: np.ndarray) -> np.ndarray:
     return 0.5 * (R + R.conj().T)
 
 
+def forward_backward_average(R: np.ndarray) -> np.ndarray:
+    """Persymmetric estimate 0.5 (R + J R^* J), J = exchange matrix.
+
+    Valid when the true covariance is persymmetric: uniformly spaced linear array
+    (channel index order = position order), uniform PRI, no TDM offsets, and
+    calibrated channels. Roughly doubles the effective sample support.
+    """
+    return 0.5 * (R + np.conj(R[::-1, ::-1]))
+
+
 def estimate_noise_floor(eigenvalues: np.ndarray, fraction: float = 0.25) -> float:
     """Mean of the smallest ``fraction`` of eigenvalues (heuristic noise-level estimate).
 

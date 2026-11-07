@@ -21,8 +21,7 @@ dev = ["pytest>=7", "nbformat>=5", "nbclient>=0.8", "ipykernel>=6"]
 gpu = ["cupy-cuda12x>=13"]
 
 [project.scripts]
-radar-stap-simulate = "radar_stap.cli:simulate_main"
-radar-stap-process-capture = "radar_stap.cli:process_capture_main"
+radar-stap = "radar_stap.cli:main"   # same as python scripts/radar.py
 
 [tool.setuptools.packages.find]
 where = ["src"]

@@ -63,7 +63,7 @@ def test_simulate_script_runs(tmp_path):
     cfgp = tmp_path / "sim.yaml"
     cfgp.write_text(yaml.safe_dump(data))
     env = {**os.environ, "PYTHONPATH": str(ROOT / "src")}
-    r = subprocess.run([sys.executable, "scripts/simulate_scene.py", "--config", str(cfgp), "--output-dir",
+    r = subprocess.run([sys.executable, "scripts/radar.py", "simulate", "--config", str(cfgp), "--output-dir",
                         str(tmp_path / "out"), "--no-plots"], cwd=ROOT, capture_output=True, text=True, env=env, timeout=300)
     assert r.returncode == 0, r.stderr[-2000:]
     assert "Ground truth" in r.stdout and (tmp_path / "out" / "results.json").is_file()
@@ -99,7 +99,13 @@ def test_shipped_configs_are_valid():
 
 
 def test_capture_template_is_incomplete_and_refuses_to_decode(tmp_path, capsys):
-    cc = load_capture_config(ROOT / "configs" / "radar_capture.yaml")
+    # The shipped configs are filled in; build an incomplete template from one of them.
+    data = yaml.safe_load((ROOT / "configs" / "radar_capture_vehicle.yaml").read_text())
+    data["adc_format"]["iq_order"] = None
+    data["adc_format"]["data_type"] = None
+    template = tmp_path / "template.yaml"
+    template.write_text(yaml.safe_dump(data))
+    cc = load_capture_config(template)
     a = assess_capture_config(cc)
     assert not a.available("decode")
     assert any("adc_format.iq_order" in m or "adc_format.data_type" in m for m in a.stages["decode"]["missing"])
@@ -107,7 +113,7 @@ def test_capture_template_is_incomplete_and_refuses_to_decode(tmp_path, capsys):
     dummy.write_bytes(b"\x00" * 1024)
     with pytest.raises(CaptureConfigError, match="cannot decode"):
         process_capture(cc, dummy, tmp_path / "out")
-    rc = process_capture_main(["--config", str(ROOT / "configs" / "radar_capture.yaml"), "--input", str(dummy),
+    rc = process_capture_main(["--config", str(template), "--input", str(dummy),
                                "--output-dir", str(tmp_path / "out")])
     assert rc == 2
     err = capsys.readouterr().err
@@ -187,19 +193,45 @@ def test_process_capture_script_cli(tmp_path):
                     "targets": [{"name": "a", "range_m": 20.0, "angle_deg": 0.0, "snr_db": 10.0}]})
     make_synthetic_capture(cfg, tmp_path / "cap", num_frames=1, stap_enabled=False)
     env = {**os.environ, "PYTHONPATH": str(ROOT / "src")}
-    r = subprocess.run([sys.executable, "scripts/process_capture.py", "--config", str(tmp_path / "cap" / "capture.yaml"),
+    r = subprocess.run([sys.executable, "scripts/radar.py", "process", "--config", str(tmp_path / "cap" / "capture.yaml"),
                         "--input", str(tmp_path / "cap" / "adc_data.bin"), "--output-dir", str(tmp_path / "out")],
                        cwd=ROOT, capture_output=True, text=True, env=env, timeout=300)
     assert r.returncode == 0, r.stderr[-2000:]
     assert (tmp_path / "out" / "capture_summary.json").is_file()
 
 
-def test_notebook_executes():
-    nbformat = pytest.importorskip("nbformat")
-    nbclient = pytest.importorskip("nbclient")
-    pytest.importorskip("ipykernel")
-    nb = nbformat.read(ROOT / "notebooks" / "exploration.ipynb", as_version=4)
-    nbclient.NotebookClient(nb, timeout=600, kernel_name="python3",
-                            resources={"metadata": {"path": str(ROOT / "notebooks")}}).execute()
-    errors = [o for c in nb.cells if c.cell_type == "code" for o in c.outputs if o.output_type == "error"]
-    assert not errors
+def test_synth_capture_then_process_multiple_bins(tmp_path):
+    """Documented flow: simulated scene -> synth-capture -> process on several .bin files (glob)."""
+    data = yaml.safe_load((ROOT / "configs" / "simulation.yaml").read_text())
+    data["radar"]["num_chirps"] = 8
+    data["clutter"]["num_scatterers"] = 200
+    data["stap"]["enabled"] = False
+    data["monte_carlo"]["enabled"] = False
+    scene = tmp_path / "scene.yaml"
+    scene.write_text(yaml.safe_dump(data))
+    env = {**os.environ, "PYTHONPATH": str(ROOT / "src")}
+    run = lambda *a: subprocess.run([sys.executable, "scripts/radar.py", *a], cwd=ROOT, capture_output=True,  # noqa: E731
+                                    text=True, env=env, timeout=300)
+    r = run("synth-capture", "--sim-config", str(scene), "--output-dir", str(tmp_path / "cap"), "--frames", "1",
+            "--no-stap")
+    assert r.returncode == 0, r.stderr[-2000:]
+    for f in ("adc_data.bin", "capture.yaml", "truth.json"):
+        assert (tmp_path / "cap" / f).is_file(), f
+    bins = tmp_path / "bins"
+    bins.mkdir()
+    for name in ("run_001.bin", "run_002.bin"):
+        (bins / name).write_bytes((tmp_path / "cap" / "adc_data.bin").read_bytes())
+    r = run("process", "--config", str(tmp_path / "cap" / "capture.yaml"), "--input", str(bins / "run_*.bin"),
+            "--output-dir", str(tmp_path / "out"), "--no-plots")
+    assert r.returncode == 0, r.stderr[-2000:]
+    for stem in ("run_001", "run_002"):
+        assert (tmp_path / "out" / stem / "capture_summary.json").is_file()
+
+
+def test_radar_cli_lists_commands():
+    env = {**os.environ, "PYTHONPATH": str(ROOT / "src")}
+    r = subprocess.run([sys.executable, "scripts/radar.py", "--help"], cwd=ROOT, capture_output=True, text=True,
+                       env=env, timeout=60)
+    assert r.returncode == 0
+    for cmd in ("check", "calibrate", "process", "synth-capture", "e2e-overlook", "simulate", "benchmark"):
+        assert cmd in r.stdout

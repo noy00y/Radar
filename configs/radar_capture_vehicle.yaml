@@ -1,0 +1,204 @@
+# ---------------------------------------------------------------------------
+# Hardware capture configuration: TI IWR1843BOOST + DCA1000EVM
+# EXPERIMENT: vehicle_sidelooking
+#
+# Roof-mounted, side-looking GMTI from a moving car.
+# Radar on a pole (~1.5 m above roof line, ~3 m above ground).
+# Boresight perpendicular to direction of travel (side-looking).
+# Array x-axis aligned with direction of travel for maximum
+# clutter Doppler spread across the ULA.
+#
+# WAVEFORM RATIONALE
+# ------------------
+# Single TX (Tx0 only) → 4 virtual channels → D = 4 × 16 = 64.
+# This gives a tractable sample-support requirement: ~128 training bins
+# (RMB 2D). Range window 5–75 m at 0.163 m bin spacing gives ~430 bins.
+# Max range is set by sample rate / slope: c * fs / (2 S) = 83 m at 18 MHz/us, 10 Msps.
+# 16 chirps per CPI keeps the CPI short (~1.1 ms) so clutter is
+# approximately frozen during one look; 128 frames give ~14 s of data.
+#
+# Compared to the room bench (3TX TDM, D = 1536, 128 loops):
+# - D shrinks 24×, making full-rank MVDR feasible
+# - platform motion creates a real clutter ridge
+# - scene range is 5–75 m instead of 0.5–8 m
+# ---------------------------------------------------------------------------
+
+# true: identical DCA1000/LVDS/ADC format (adc_format block below) to the verified bench captures and
+# the other two experiment configs. Re-check the first capture's decode report
+# (out_of_range_values == 0, plausible range profile) before trusting results.
+capture_format_verified: true
+
+adc_format:
+  data_type: complex
+  adc_bits: 16
+  sign_handling: int16_twos_complement
+  byte_order: little
+  iq_order: I_first
+  complex_packing: two_sample_blocks
+  channel_layout: rx_planar_per_chirp
+  num_rx: 4
+  num_adc_samples: 512           # 51.2 us of sampling per chirp -> ~430 bins in the 5-75 m window
+  chirps_per_frame: 16           # single TX, 16 chirps per frame (= 16 loops)
+  num_frames: 128                # ~14 s at 100 ms frame period
+
+waveform:
+  mmwave_cfg_file: null
+  carrier_frequency_hz: 77.0e+9
+  chirp_slope_hz_per_s: 18.0e+12   # 18 MHz/us: max range c*fs/(2S) = 83 m (60 MHz/us would cap it at 25 m)
+  idle_time_s: 10.0e-6
+  adc_start_time_s: 6.0e-6
+  ramp_end_time_s: 60.0e-6         # chirp period T_c = 70 us
+  adc_sample_rate_hz: 10.0e+6
+  mixer_convention: tx_times_conj_rx   # MUST verify: approaching target = negative v_r
+
+tx_schedule: [0]                   # single TX only → 4 virtual channels
+
+antenna:
+  verified: true
+  position_units: half_wavelength
+  rx_positions: [[0, 0, 0], [1, 0, 0], [2, 0, 0], [3, 0, 0]]
+  tx_positions: [[0, 0, 0]]        # only Tx0 used (= TX1 on the board silkscreen; config is 0-based)
+
+rx_calibration: null               # fill after corner-reflector calibration
+platform_velocity_mps: [8.0, 0.0, 0.0]   # ~30 km/h along array x-axis (informational)
+
+processing:
+  range_window: hann
+  doppler_window: hann
+  range_nfft: 512
+  doppler_nfft: 32                 # 2x zero-pad in Doppler for grid refinement
+  range_min_m: 5.0
+  range_max_m: 75.0               # margin below the 83 m IF limit (anti-alias filter roll-off)
+  beat_band: positive
+  remove_dc: true
+
+detection:
+  guard_cells: [3, 0]             # range-only CFAR per Doppler column
+  training_cells: [12, 0]         # (Doppler training is non-homogeneous near clutter ridge)
+  pfa: 1.0e-4
+  range_edge: shrink
+  doppler_edge: wrap
+  range_gate_bins: 3
+  doppler_gate_bins: 2
+  angle_gate_deg: 10.0
+
+stap:
+  enabled: true
+  look_angle_deg: 0.0              # boresight (perpendicular to travel)
+  num_training: 128                # 2 × D = 128 (RMB ~3 dB loss)
+  num_guard: 3
+  loading_mode: noise_eig_relative
+  loading_value: 1.0
+  num_doppler_hypotheses: 32
+  spatial_taper: rect
+  temporal_taper: hann
+  methods: [nonadaptive, mvdr, efa, pc]   # all four methods — D=64 supports full-rank MVDR
+  efa_num_bins: 3
+  pc_rank: null                    # auto from eigenvalue threshold
+  exclude_known_targets: false
+  exclusion_halfwidth_bins: 3
+  cfar_guard: 2
+  cfar_training: 12
+  cfar_pfa: 1.0e-3
+  test_range_min_m: 10.0
+  test_range_max_m: 70.0
+
+max_frames: null
+allow_partial_final_frame: false
+notes: >
+  Vehicle side-looking: radar on roof pole, boresight perpendicular to travel.
+  Single TX (Tx0) for D=64, enabling full-rank MVDR with 128 training bins.
+  Expect a linear clutter ridge (beta ~ 2 v_p T_c / d) in angle-Doppler;
+  STAP should cancel the ridge and reveal slow ground movers.
+  Drive at ~30 km/h on a straight road with pedestrians or cyclists as targets.
+
+studio:
+  experiment: vehicle_sidelooking
+
+  scenario:
+    description: "Straight road, ~30 km/h, pedestrians/cyclists as targets of opportunity"
+    max_scene_range_m: 75.0
+    max_target_speed_mps: 5.0
+    platform_speed_max_mps: 12.0   # ~43 km/h upper bound
+
+  static_config:
+    tx_enable: [true, false, false]   # single TX only
+    rx_enable: [true, true, true, true]
+    cascading_mode: single_chip
+    rf_ldo_bypass_enable: true
+    pa_ldo_ip_disable: true
+    supply_ir_drop_percent: 0
+    io_supply_v: 3.3
+    lp_adc_mode: regular
+    adc_full_scale_reduction: 0
+    per_chirp_phase_shifter: false
+    freq_limit_ghz: [77.0, 81.0]
+
+  data_path:
+    interface: lvds
+    packet0: adc_only
+    packet1: suppress
+    lane_clock: ddr
+    data_rate_mbps: 600
+    lanes_enabled: [1, 2]
+    msb_first: true
+    crc: false
+
+  profile:
+    id: 0
+    rx_gain_db: 30
+    hpf1_corner_khz: 175
+    hpf2_corner_khz: 350
+
+  chirp:
+    profile_id: 0
+    start_idx: 0
+    end_idx: 0                     # single chirp config (Tx0 only)
+    tx_enable: [true, false, false]
+
+  frame:
+    start_chirp: 0
+    end_chirp: 0                   # single chirp per loop
+    num_loops: 16                  # 16 chirps per frame
+    period_s: 0.100                # 10 Hz frame rate
+    num_frames: 128
+    trigger_select: software
+
+  capture_card:
+    device: DCA1000
+    host_ip: 192.168.33.30
+    fpga_ip: 192.168.33.180
+    fpga_mac: "12:34:56:78:90:12"
+    config_port: 4096
+    data_port: 4098
+    log_mode: raw
+    lvds_lanes: 2
+    transfer: lvds_capture
+    capture: ethernet_stream
+    data_bits: 16
+    packet_delay_us: 25
+    timeout_s: 60
+
+# ---------------------------------------------------------------------------
+# MOUNTING SPECIFICATION
+# ---------------------------------------------------------------------------
+# Position: Centre of roof, pole-mounted 1.5 m above roof line.
+#           Total height above road: ~3.0 m.
+# Orientation:
+#   - Array x-axis (RX0→RX3 direction) aligned with direction of travel
+#   - platform_velocity [+8,0,0] assumes the RX4 end of the board points FORWARD.
+#     Facing the antennas (silkscreen upright), RX4 is on the right; with the
+#     board looking out the left (driver's) side and text upright, RX4 points
+#     to the REAR. Either mount the board upside down (fine for single TX, all
+#     antennas level) or set platform_velocity_mps to [-8.0, 0.0, 0.0].
+#   - Boresight (+y) pointing perpendicular to travel (driver's side)
+#   - No depression angle (0°) for initial test — add 5-10° later if
+#     ground clutter is too weak at short range.
+# Justification:
+#   Side-looking maximises the clutter Doppler spread across the array.
+#   With v_p along x, every stationary scatterer at angle theta has
+#   Doppler nu = -2 v_p sin(theta) / lambda, filling the angle-Doppler
+#   plane with a ridge of slope beta = 2 v_p T_slow / d.
+#   A forward-looking mount collapses the ridge to a point (all clutter
+#   at the same Doppler), eliminating the spatial diversity STAP needs.
+# ---------------------------------------------------------------------------
