@@ -55,8 +55,13 @@ def plot_range_doppler(rd, range_m, velocity_mps, detections=None, truths=None, 
     return _save(fig, path, dpi)
 
 
-def plot_angle_doppler(R, model, path=None, dpi=120, title="Angle-Doppler (Fourier) spectrum of training covariance"):
-    """P(theta, nu) = s^H R s / (s^H s): shows the clutter ridge."""
+def plot_angle_doppler(R, model, path=None, dpi=120, title="Angle-Doppler (Fourier) spectrum of training covariance",
+                       platform_velocity_mps=None):
+    """P(theta, nu) = s^H R s / (s^H s): shows the clutter ridge.
+
+    If ``platform_velocity_mps`` (body frame) is given, the predicted ridge of stationary
+    scatterers, v_r(theta) = -v_p . u(theta), is overlaid (wrapped into the unambiguous span).
+    """
     from .angle_processing import direction_from_angles
 
     ang = np.linspace(-85, 85, 171)
@@ -69,6 +74,15 @@ def plot_angle_doppler(R, model, path=None, dpi=120, title="Angle-Doppler (Fouri
     p = db(P)
     im = ax.pcolormesh(ang, model.velocity_of(nu), p, shading="nearest", vmin=p.max() - 50, vmax=p.max(), cmap="magma")
     fig.colorbar(im, ax=ax, label="Power [dB]")
+    if platform_velocity_mps is not None and np.any(np.asarray(platform_velocity_mps, float)):
+        v_axis = model.velocity_of(nu)
+        lo, hi = float(v_axis.min()), float(v_axis.max())
+        span = (hi - lo) * nu.size / (nu.size - 1)          # full unambiguous velocity span
+        a_fine = np.linspace(-85, 85, 681)
+        v_ridge = -direction_from_angles(a_fine) @ np.asarray(platform_velocity_mps, float)
+        v_wrapped = (v_ridge - lo) % span + lo
+        ax.plot(a_fine, v_wrapped, ".", ms=1.5, color="#00e5ff", label="predicted stationary-clutter ridge")
+        ax.legend(fontsize=7, loc="upper right")
     ax.set_xlabel("Angle from array normal [deg]")
     ax.set_ylabel("Radial velocity [m/s]")
     ax.set_title(title)

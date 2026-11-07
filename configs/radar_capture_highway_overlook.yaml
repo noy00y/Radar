@@ -1,0 +1,229 @@
+# ---------------------------------------------------------------------------
+# Hardware capture configuration: TI IWR1843BOOST + DCA1000EVM
+# EXPERIMENT 1: highway_overlook (static radar, 17th floor, Hwy 401)
+#
+# Not STAP in the airborne sense: the radar does not move, so all stationary
+# clutter sits at 0 m/s (no clutter ridge). Purpose: validate the real-data chain
+# end to end on many fast, well-separated movers before putting the radar on a car:
+#   - decode / range / Doppler / angle on real traffic at 50-300 m
+#   - mixer sign (the two traffic directions must have opposite velocity signs)
+#   - angle sign + calibration (cars at known lanes / known sides)
+#   - multi-frame persistence (each car tracked across ~20 frames)
+#
+# SCENE GEOMETRY (ASSUMPTIONS -- measure and update range_min_m/range_max_m)
+#   height  ~ 17 floors x 3 m ~ 51 m above the road
+#   horizontal distance building -> near collector ~ 50 m, -> far express edge ~ 220 m
+#   slant range = sqrt(h^2 + x^2): ~ 71 m (near) ... ~ 226 m (far)
+#   depression angle: ~ 45 deg (near) ... ~ 13 deg (far)
+#   traffic: 100-130 km/h (28-36 m/s), both directions
+#
+# WAVEFORM DESIGN (lambda = c / 77 GHz = 3.896 mm, fs = 10 Msps complex)
+#   Max range      R_max = c fs / (2 S) = 333 m at S = 4.5 MHz/us (90 % usable ~ 300 m)
+#                  -> beat at 290 m = 2 S R / c = 8.7 MHz < 10 MHz IF limit
+#   Chirp period   T_c = idle 4 + ramp 29.5 = 33.5 us
+#   Speed limit    v_max = lambda / (4 T_c) = 29.1 m/s (105 km/h RADIAL). Radial speed is
+#                  v_car * sin(azimuth) * cos(depression), so a 120 km/h car only exceeds it
+#                  beyond ~ +-60 deg azimuth. NOT fully met for fast cars at wide angles
+#                  (they wrap): covering 36 m/s needs T_c <= lambda/(4*36) = 27 us -> ADC
+#                  window <= ~19 us (190 samples) -> range resolution 1.76 m. Accepted.
+#   Range res.     B = S * N / fs = 4.5 MHz/us * 24 us = 108 MHz -> c/(2B) = 1.39 m
+#                  (car ~ 4.5 m long -> 2-4 bins; lanes 3.7 m apart -> resolvable in slant)
+#   Doppler res.   lambda / (2 L T_c) = 0.45 m/s with L = 128 chirps
+#   CPI            128 x 33.5 us = 4.3 ms; a 33 m/s car moves 0.14 m (< 0.1 bin): no smearing
+#   Single TX      2-TX TDM would halve v_max to 14.5 m/s: every highway car would wrap.
+#                  Also keeps the SAME 4 channels / calibration as the car experiment.
+#
+# STAP here: D = 4 x 128 = 512 -> full-rank MVDR/PC need ~2D = 1024 training samples, but
+# only ~190 range bins exist (40-290 m at 1.3 m). Solved with multi-frame training:
+# 128 range bins x 9 consecutive frames = 1152 samples (> 2D). Valid because the radar is
+# static (clutter statistics identical frame to frame); the noise is independent between
+# frames, the static clutter is not, but its subspace is low-rank (all at 0 m/s) and is
+# already well sampled by 128 range bins.
+# ---------------------------------------------------------------------------
+
+# DEFAULT true: identical DCA1000/LVDS/ADC format to the bench captures 001-003, which were
+# decoded and verified (0 dropped bytes, 0 out-of-range values). Re-check the first capture's
+# decode report (out_of_range_values == 0, plausible range profile) before trusting results.
+capture_format_verified: true
+
+adc_format:
+  data_type: complex
+  adc_bits: 16
+  sign_handling: int16_twos_complement
+  byte_order: little
+  iq_order: I_first
+  complex_packing: two_sample_blocks
+  channel_layout: rx_planar_per_chirp
+  num_rx: 4
+  num_adc_samples: 240           # 24 us of sampling: longest window that keeps T_c = 33.5 us
+  chirps_per_frame: 128          # single TX -> 128 loops; 0.45 m/s Doppler resolution
+  num_frames: 600                # 30 s at 50 ms; 295 MB
+
+waveform:
+  mmwave_cfg_file: null
+  carrier_frequency_hz: 77.0e+9
+  chirp_slope_hz_per_s: 4.4900e+12 # 93 x 48.2797 kHz/us (TI slope LSB) = the value Studio programs for a
+                                   # 4.5 MHz/us request -> R_max = 334 m. Replace with Studio's reported value.
+  idle_time_s: 4.0e-6              # low slope -> short synthesiser settling; raise if Studio warns
+  adc_start_time_s: 4.0e-6
+  ramp_end_time_s: 29.5e-6         # ADC window ends at 4 + 24 = 28 us; 1.5 us excess ramp
+  adc_sample_rate_hz: 10.0e+6
+  mixer_convention: tx_times_conj_rx   # VERIFY HERE: approaching cars must be negative v_r
+
+tx_schedule: [0]                   # TX1 only (see header: v_max)
+
+antenna:
+  verified: true
+  position_units: half_wavelength
+  rx_positions: [[0, 0, 0], [1, 0, 0], [2, 0, 0], [3, 0, 0]]
+  tx_positions: [[0, 0, 0]]        # Tx0 = TX1 on the silkscreen
+
+# DEFAULT null = identity (no correction). Kept null rather than [[1,0]]x4 so the stage report
+# keeps warning that angles are uncalibrated. Fill from scripts/calibrate_capture.py (room or
+# balcony corner-reflector capture recorded WITH THIS WAVEFORM, reflector >= 8 m away).
+rx_calibration: null
+platform_velocity_mps: null        # static radar
+
+processing:
+  range_window: hann
+  doppler_window: hann
+  range_nfft: 256                  # 1.30 m bins
+  doppler_nfft: 256                # 2x zero-pad
+  range_min_m: 40.0                # below the nearest road (~71 m); excludes the building / window
+  range_max_m: 290.0               # beyond the far express edge (~226 m); < 300 m usable IF
+  beat_band: positive
+  remove_dc: true
+
+detection:
+  guard_cells: [3, 2]              # car spans 2-4 range bins
+  training_cells: [12, 8]          # 2-D CFAR is fine here: clutter is confined to 0 m/s
+  pfa: 1.0e-4
+  range_edge: shrink
+  doppler_edge: wrap
+  range_gate_bins: 3
+  doppler_gate_bins: 2
+  angle_gate_deg: 10.0
+
+stap:
+  enabled: true
+  look_angle_deg: 0.0              # boresight (perpendicular to the highway)
+  # Sweep: cars at boresight move ACROSS the beam (radial speed ~0) and are indistinguishable
+  # from road clutter; the measurable traffic is at +-15..60 deg. 15 deg steps < ~25 deg beamwidth
+  # of the 4-element array, so every direction is covered within ~1 dB of a beam peak.
+  look_angles_deg: [-60, -45, -30, -15, 0, 15, 30, 45, 60]
+  forward_backward: true           # single TX + uniform ULA + uniform PRI -> persymmetric: 2x samples
+  # Compute backend: auto = CuPy/CUDA GPU if available (your RTX 3060), else the per-bin CPU
+  # reference. single precision on the GPU (consumer cards run float64 ~64x slower);
+  # 32 bins/batch ~ 0.6 GB GPU memory at D = 512 with 2304 training samples.
+  backend: auto
+  precision: single
+  gpu_batch_bins: 32
+  num_training: 128                # range bins per frame (of ~190)
+  training_frames: 9               # x 9 frames (450 ms) = 1152 samples (x2 FB = 2304) > 2D = 1024
+  training_censor_db: 15.0         # keep strong cars out of training (prevents self-nulling)
+  num_guard: 3
+  loading_mode: noise_eig_relative
+  loading_value: 1.0
+  num_doppler_hypotheses: 128
+  spatial_taper: rect
+  temporal_taper: hann
+  methods: [nonadaptive, mvdr, efa, pc]   # MVDR/PC feasible via multi-frame training (~8 s/frame each on CPU)
+  efa_num_bins: 3
+  pc_rank: null
+  exclude_known_targets: false
+  exclusion_halfwidth_bins: 3
+  cfar_guard: 2
+  cfar_training: 12
+  cfar_pfa: 1.0e-3
+  test_range_min_m: 60.0
+  test_range_max_m: 260.0
+
+max_frames: 64                     # default processing subset (~3 s); override with --max-frames
+allow_partial_final_frame: false
+notes: >
+  Static overlook of Hwy 401 from ~51 m. Validates decode, range, Doppler sign, angle sign and
+  calibration on real traffic. Static radar: clutter at 0 m/s only, no clutter ridge.
+  Open the window (or use the balcony): glass, especially low-E coated, can attenuate 77 GHz
+  by 10-40 dB and its reflection at < 1 m can saturate the receiver.
+
+studio:
+  experiment: highway_overlook
+
+  scenario:
+    description: "Static, 17th floor, Hwy 401 traffic both directions, 70-230 m slant range"
+    max_scene_range_m: 290.0
+    max_target_speed_mps: 36.0     # 130 km/h along the road (radial component smaller)
+    platform_speed_max_mps: 0.0
+
+  static_config:
+    tx_enable: [true, false, false]
+    rx_enable: [true, true, true, true]
+    cascading_mode: single_chip
+    rf_ldo_bypass_enable: true
+    pa_ldo_ip_disable: true
+    supply_ir_drop_percent: 0
+    io_supply_v: 3.3
+    lp_adc_mode: regular
+    adc_full_scale_reduction: 0
+    per_chirp_phase_shifter: false
+    freq_limit_ghz: [77.0, 81.0]
+
+  data_path:
+    interface: lvds
+    packet0: adc_only
+    packet1: suppress
+    lane_clock: ddr
+    data_rate_mbps: 600
+    lanes_enabled: [1, 2]
+    msb_first: true
+    crc: false
+
+  profile:
+    id: 0
+    rx_gain_db: 30                 # ADC RMS was ~400/32767 indoors: plenty of headroom; raise to 36-40
+                                   # only if far-lane returns sit at the ADC quantisation floor
+    hpf1_corner_khz: 175           # nearest road beat = 2 S R / c = 2.1 MHz: unaffected
+    hpf2_corner_khz: 350
+
+  chirp:
+    profile_id: 0
+    start_idx: 0
+    end_idx: 0
+    tx_enable: [true, false, false]
+
+  frame:
+    start_chirp: 0
+    end_chirp: 0
+    num_loops: 128
+    period_s: 0.050                # 20 Hz: a 33 m/s car moves 1.7 m (~1.3 bins) per frame
+    num_frames: 600
+    trigger_select: software
+    # data rate: 128 x 4 RX x 240 x 4 B = 492 kB/frame -> 9.8 MB/s (79 Mbit/s), far below LVDS/Ethernet limits
+
+  capture_card:
+    device: DCA1000
+    host_ip: 192.168.33.30
+    fpga_ip: 192.168.33.180
+    fpga_mac: "12:34:56:78:90:12"
+    config_port: 4096
+    data_port: 4098
+    log_mode: raw
+    lvds_lanes: 2
+    transfer: lvds_capture
+    capture: ethernet_stream
+    data_bits: 16
+    packet_delay_us: 25
+    timeout_s: 60
+
+# ---------------------------------------------------------------------------
+# MOUNTING
+# ---------------------------------------------------------------------------
+# - Array x-axis (RX1 -> RX4) parallel to the highway; boresight perpendicular to it.
+# - Tilt the board DOWN ~25-30 deg: the road spans ~13-45 deg depression and the
+#   antenna's vertical beam is roughly +-20 deg (check TI's antenna pattern).
+# - Cars exactly at boresight move across the beam (radial speed ~ 0) and merge with
+#   the 0 m/s clutter: that is expected, and is the static analogue of STAP's
+#   minimum-detectable-velocity problem. Cars at +-20-60 deg have clear radial speed.
+# - Rigid mount (tripod), no motion: any frame-to-frame shift of the 0 m/s returns is a
+#   mount problem, not physics.
+# ---------------------------------------------------------------------------

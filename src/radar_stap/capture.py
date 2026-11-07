@@ -96,6 +96,10 @@ class CaptureConfig:
     adc_format: AdcFormat = field(default_factory=AdcFormat)
     waveform: CaptureWaveform = field(default_factory=CaptureWaveform)
     tx_schedule: Optional[list[int]] = None
+    # Project policy: single TX only. TDM-MIMO couples target speed into angle (the per-TX
+    # phase compensation needs the true, unaliased Doppler) and divides the speed limit by the
+    # number of TX. Multi-TX captures get angle/STAP only with this explicit opt-in (legacy data).
+    allow_multi_tx: bool = False
     antenna: CaptureAntenna = field(default_factory=CaptureAntenna)
     rx_calibration: Optional[list[list[float]]] = None  # per virtual channel [re, im] multipliers
     platform_velocity_mps: Optional[list[float]] = None  # informational
@@ -277,6 +281,12 @@ def assess_capture_config(cc: CaptureConfig, allow_unverified_format: bool = Fal
         ang_missing.append("antenna.tx_positions")
     elif cc.tx_schedule is not None and max(cc.tx_schedule) >= len(a.tx_positions):
         ang_missing.append("antenna.tx_positions (does not cover every TX in tx_schedule)")
+    if cc.tx_schedule is not None and len(set(cc.tx_schedule)) > 1 and not cc.allow_multi_tx:
+        ang_missing.append(
+            f"tx_schedule {cc.tx_schedule}: multi-TX (TDM-MIMO) is disabled by project policy - its angle "
+            "depends on the unaliased target speed. Use a single TX (e.g. [0]); for legacy multi-TX "
+            "captures set allow_multi_tx: true"
+        )
     ang_notes = []
     if cc.rx_calibration is None:
         ang_notes.append("no per-channel phase/gain calibration: angle estimates and STAP null depth are unreliable")
@@ -285,8 +295,49 @@ def assess_capture_config(cc: CaptureConfig, allow_unverified_format: bool = Fal
         "missing": missing_desc(ang_missing),
         "notes": ang_notes,
     }
-    stap_missing = [] if cc.stap.enabled else ["stap.enabled"]
-    stap_notes = ["platform velocity not needed by adaptive STAP; used only for interpretation"] if cc.stap.enabled else []
+    s = cc.stap
+    stap_missing = [] if s.enabled else ["stap.enabled"]
+    stap_notes = ["platform velocity not needed by adaptive STAP; used for dpca and the predicted clutter ridge"] if s.enabled else []
+    if s.enabled:
+        known = {"nonadaptive", "mvdr", "efa", "pc", "dpca"}
+        if not set(s.methods) <= known:
+            stap_missing.append(f"stap.methods (unknown: {sorted(set(s.methods) - known)})")
+        if "dpca" in s.methods and not (cc.platform_velocity_mps and any(cc.platform_velocity_mps)):
+            stap_missing.append("platform_velocity_mps (required by dpca)")
+        if s.training_frames < 1 or s.training_frames % 2 == 0:
+            stap_missing.append("stap.training_frames (must be an odd integer >= 1)")
+        if s.training_censor_db is not None and s.training_censor_db <= 0:
+            stap_missing.append("stap.training_censor_db (must be > 0 dB or null)")
+        if s.look_angles_deg is not None and (not s.look_angles_deg or any(abs(a) >= 90 for a in s.look_angles_deg)):
+            stap_missing.append("stap.look_angles_deg (non-empty list of angles in (-90, 90))")
+        if s.forward_backward and cc.rx_calibration is None:
+            stap_notes.append("forward_backward assumes calibrated channels: uncalibrated phase errors break "
+                              "persymmetry (expect extra SINR loss)")
+        from .batched import BACKENDS, PRECISIONS, resolve_backend
+        from .backend import BackendUnavailable
+
+        if s.backend not in BACKENDS:
+            stap_missing.append(f"stap.backend (one of {list(BACKENDS)})")
+        elif s.precision not in PRECISIONS:
+            stap_missing.append(f"stap.precision (one of {sorted(PRECISIONS)})")
+        elif s.gpu_batch_bins < 1:
+            stap_missing.append("stap.gpu_batch_bins (must be >= 1)")
+        else:
+            try:
+                _, used = resolve_backend(s.backend)
+                stap_notes.append(f"STAP backend: {used}" + (f" ({s.precision} precision, {s.gpu_batch_bins} bins/batch)"
+                                                            if used != "numpy" else " (per-bin CPU reference)"))
+            except BackendUnavailable as exc:
+                stap_missing.append(f"stap.backend cupy: {exc} (install radar-stap[gpu] on a CUDA machine, or use auto)")
+        if fmt.num_rx is not None and fmt.chirps_per_frame is not None and cc.tx_schedule:
+            D = fmt.num_rx * fmt.chirps_per_frame
+            samples = s.num_training * s.training_frames * (2 if s.forward_backward else 1)
+            for m in ("mvdr", "pc"):
+                if m in s.methods and samples < D:
+                    stap_notes.append(f"{m}: {samples} training samples < D={D}: covariance is singular "
+                                      "(increase num_training or training_frames)")
+                elif m == "mvdr" and m in s.methods and samples < 2 * D:
+                    stap_notes.append(f"mvdr: {samples} training samples < 2D={2 * D}: > 3 dB expected loss (RMB)")
     stages["stap"] = {
         "available": stages["angle"]["available"] and not stap_missing,
         "missing": missing_desc(stap_missing),
@@ -458,27 +509,53 @@ def process_capture(
         files.append("range_doppler_mean.png")
 
     if assess.available("stap"):
-        report["stap"] = _capture_stap(Y[0], sched, cal, model, valid, cc, raxis, out if make_plots else None)
-        if make_plots:
-            files.append("stap_gmti_frame0.png")
+        report["stap"] = _capture_stap(Y, sched, cal, model, valid, cc, raxis, out if make_plots else None)
+        files.extend(report["stap"].pop("files", []))
     else:
         report["stap"] = "unavailable"
     json_dump(report, out / "capture_summary.json")
     return report
 
 
-def _capture_stap(Y0, sched, cal, model, valid, cc, raxis, out_dir):
+def _capture_stap(Y, sched, cal, model, valid, cc, raxis, out_dir):
+    """Angle-gated STAP/GMTI on every frame (CPI) of the capture.
+
+    ``Y`` is the range-compressed capture (frames, rx, chirps, bins). Each frame is one
+    CPI and is tested on its own data. Training:
+
+    * range bins around the test bin (guard cells excluded), restricted to ``valid``;
+    * pooled over ``stap.training_frames`` consecutive CPIs centred on the test frame
+      (samples = num_training * training_frames). Valid while the clutter statistics
+      are stationary over the pooling window: static radar, or a moving platform
+      whose scene shifts only ~1 range bin per frame;
+    * optionally censored: bins more than ``stap.training_censor_db`` above the local
+      median power (strong movers / discretes) are dropped from training, which
+      protects targets from self-nulling (they are still tested).
+
+    Reported per method: per-frame CFAR detections, persistence of each (range bin,
+    Doppler hypothesis) cell across frames, and detections on the noncoherently
+    integrated (mean-power over frames) output.
+    """
+    from collections import defaultdict
+    from dataclasses import replace
+
     from .experiments import gmti_detect
 
     s = cc.stap
-    V = to_virtual_cube(Y0, sched)
-    if cal is not None:
-        V = V * cal[:, None, None]
-    snaps = snapshots(V)
-    direction = direction_from_angles(s.look_angle_deg)
+    if s.loading_mode == "noise_relative":
+        raise CaptureConfigError("capture STAP has no known noise level: use loading_mode noise_eig_relative/absolute/trace_relative")
+    num_frames = int(Y.shape[0])
+    angles = [float(a) for a in (s.look_angles_deg or [s.look_angle_deg])]
+    directions = direction_from_angles(np.asarray(angles))  # (A, 3)
+    direction = directions[0]  # primary look: plots and DPCA blind-speed report
     nu = model.doppler_grid(s.num_doppler_hypotheses)
+    J = nu.size
+    tmin = -np.inf if s.test_range_min_m is None else s.test_range_min_m
+    tmax = np.inf if s.test_range_max_m is None else s.test_range_max_m
     test = []
     for b in np.where(valid)[0]:
+        if not tmin <= raxis.range_m[b] <= tmax:
+            continue
         try:
             select_training_bins(int(b), s.num_training, s.num_guard, valid)
             test.append(int(b))
@@ -486,36 +563,320 @@ def _capture_stap(Y0, sched, cal, model, valid, cc, raxis, out_dir):
             pass
     if not test:
         return {"error": "no range bins with enough training support"}
-    res_all, gmti = {}, {}
+    test = np.asarray(test)
+
+    def range_of(b):
+        return np.interp(np.asarray(b, float), np.arange(raxis.num_bins), raxis.range_m)
+
+    def det_rows(dets, angle):
+        return [
+            {
+                "range_m": float(range_of(d.range_bin_frac)),
+                "radial_velocity_mps": float(model.velocity_of(nu[int(d.doppler_bin_frac)])),
+                "look_angle_deg": angle,
+                "output_snr_db": d.snr_estimate_db,
+            }
+            for d in dets[:50]
+        ]
+
+    dv = float(abs(model.velocity_of(nu[1] - nu[0]))) if J > 1 else 0.0
+
+    def merge_looks(rows):
+        """One target is seen by neighbouring look angles: keep the strongest look per
+        (range, velocity) cell, which also gives a coarse angle estimate."""
+        kept = []
+        for r in sorted(rows, key=lambda r: -r["output_snr_db"]):
+            if not any(abs(r["range_m"] - k["range_m"]) <= 1.5 * raxis.bin_spacing_m
+                       and abs(r["radial_velocity_mps"] - k["radial_velocity_mps"]) <= 1.5 * dv for k in kept):
+                kept.append(r)
+        return kept
+
+    methods, build_errors = {}, {}
     for name in s.methods:
-        if s.loading_mode == "noise_relative":
-            raise CaptureConfigError("capture STAP has no known noise level: use loading_mode noise_eig_relative/absolute/trace_relative")
-        meth = build_method(name, model, s)
         try:
-            res = run_gmti(snaps, model, meth, direction, nu, np.asarray(test), s.num_training, s.num_guard, valid)
+            methods[name] = build_method(name, model, s, platform_velocity_mps=cc.platform_velocity_mps)
         except ValueError as exc:
-            res_all[name] = {"error": str(exc)}
+            build_errors[name] = str(exc)
+            log.warning("STAP method %s not run: %s", name, exc)
+    state = {
+        name: {"frames": [], "weight_s": 0.0, "power_sum": [None] * len(angles), "last_res": None, "first": None,
+               "cells": defaultdict(list), "error": None}
+        for name in methods
+    }
+    K = int(s.training_frames)
+    from .batched import resolve_backend
+
+    xp, backend_used = resolve_backend(s.backend)
+    cache: dict[int, np.ndarray] = {}
+
+    def frame_snaps(k):
+        if k not in cache:
+            V = to_virtual_cube(Y[k], sched)
+            if cal is not None:
+                V = V * cal[:, None, None]
+            cache[k] = snapshots(V)
+        return cache[k]
+
+    censored = []
+    for fi in range(num_frames):
+        k0 = min(max(0, fi - K // 2), max(0, num_frames - K))
+        window = list(range(k0, min(num_frames, k0 + K)))
+        for k in [k for k in cache if k < k0]:
+            del cache[k]
+        snaps = frame_snaps(fi)
+        pool = np.stack([frame_snaps(k) for k in window]) if len(window) > 1 else None
+        train_mask = valid
+        if s.training_censor_db is not None:
+            power = (np.abs(snaps[None] if pool is None else pool) ** 2).mean(axis=(0, 2))
+            train_mask = censor_training_bins(power, valid, s.num_training, s.num_guard, s.training_censor_db)
+        censored.append(int(valid.sum() - train_mask.sum()))
+        Xv = snaps[valid]
+        R_frame = (Xv.conj().T @ Xv) / max(Xv.shape[0], 1)   # swath-averaged space-time covariance
+        if fi == 0:
+            R_first = R_frame
+            R_sum = np.zeros_like(R_frame)
+        R_sum += R_frame
+        for name, meth in methods.items():
+            st = state[name]
+            if st["error"] is not None:
+                continue
+            try:
+                res = run_gmti(snaps, model, meth, directions, nu, test, s.num_training, s.num_guard, train_mask,
+                               measure_memory=(fi == 0), training_snaps=pool, backend=xp,
+                               precision=s.precision, batch_bins=s.gpu_batch_bins)
+            except (ValueError, FloatingPointError) as exc:
+                st["error"] = f"frame {fi}: {exc}"
+                continue
+            st["weight_s"] += res.weight_seconds
+            st["last_res"] = res
+            rows, n_raw = [], 0
+            for ai, ang in enumerate(angles):
+                res_a = replace(res, output=res.output[:, ai * J:(ai + 1) * J], nu_grid=nu)
+                gd = gmti_detect(res_a, s)
+                st["power_sum"][ai] = res_a.power if st["power_sum"][ai] is None else st["power_sum"][ai] + res_a.power
+                if fi == 0 and ai == 0:
+                    st["first"] = gd
+                for d in gd.detections:
+                    st["cells"][(ai, int(round(d.range_bin_frac)), int(d.doppler_bin_frac))].append(d.snr_estimate_db)
+                n_raw += len(gd.detections)
+                rows += det_rows(gd.detections, ang)
+            merged = merge_looks(rows)
+            st["frames"].append({"frame": fi, "num_detections": len(merged), "num_detections_all_looks": n_raw,
+                                 "detections": merged[:50]})
+        if (fi + 1) % 8 == 0 or fi + 1 == num_frames:
+            log.info("STAP: processed %d/%d frames", fi + 1, num_frames)
+
+    res_all, gmti_first, gmti_int = {name: {"error": e} for name, e in build_errors.items()}, {}, {}
+    for name, st in state.items():
+        n_ok = len(st["frames"])
+        if n_ok == 0:
+            res_all[name] = {"error": st["error"]}
             continue
-        gd = gmti_detect(res, s)
-        gmti[name] = gd
+        # Noncoherent integration over CPIs (valid for a static radar; on a moving platform
+        # targets and clutter migrate in range between frames, so this map smears).
+        # The integrated power is Gamma- not exponential-distributed: CA-CFAR is conservative here.
+        rows_int = []
+        for ai, ang in enumerate(angles):
+            res_int = replace(st["last_res"], output=np.sqrt(st["power_sum"][ai] / n_ok), nu_grid=nu)
+            gd_int = gmti_detect(res_int, s)
+            if ai == 0:
+                gmti_int[name] = gd_int
+            rows_int += det_rows(gd_int.detections, ang)
+        rows_int = merge_looks(rows_int)
+        if st["first"] is not None:
+            gmti_first[name] = st["first"]
+        counts = [f["num_detections"] for f in st["frames"]]
+        persistent = sorted(st["cells"].items(), key=lambda kv: -len(kv[1]))[:30]
         res_all[name] = {
-            "num_detections": len(gd.detections),
-            "weight_seconds": res.weight_seconds,
-            "detections": [
+            "frames_processed": n_ok,
+            "total_detections": int(sum(counts)),
+            "mean_detections_per_frame": float(np.mean(counts)),
+            "weight_seconds_total": st["weight_s"],
+            "weight_seconds_per_frame": st["weight_s"] / n_ok,
+            "persistent_detections": [
                 {
-                    "range_m": float(np.interp(d.range_bin_frac, np.arange(raxis.num_bins), raxis.range_m)),
-                    "radial_velocity_mps": float(model.velocity_of(nu[int(d.doppler_bin_frac)])),
-                    "output_snr_db": d.snr_estimate_db,
+                    "range_m": float(range_of(b)),
+                    "radial_velocity_mps": float(model.velocity_of(nu[j])),
+                    "look_angle_deg": angles[ai],
+                    "frames_detected": len(v),
+                    "fraction_of_frames": len(v) / n_ok,
+                    "mean_output_snr_db": float(np.mean(v)),
                 }
-                for d in gd.detections[:50]
+                for (ai, b, j), v in persistent
             ],
+            "integrated": {"num_detections": len(rows_int), "detections": rows_int[:50]},
+            "frames": st["frames"],
         }
-    if out_dir is not None and gmti:
+        if getattr(methods[name], "adaptive", True) is False and getattr(methods[name], "info", None) is not None:
+            info = dict(methods[name].weights(None, model.steering(direction, nu), nu).info)
+            if "blind_hypotheses" in info:
+                info["blind_velocities_mps"] = [float(model.velocity_of(nu[j])) for j in info.pop("blind_hypotheses")]
+            res_all[name]["method_info"] = info
+        if st["error"] is not None:
+            res_all[name]["error"] = st["error"]
+
+    files = []
+    if out_dir is not None:
         from . import plotting as pl
 
-        pl.plot_gmti_maps(gmti, lambda b: np.interp(np.asarray(b, float), np.arange(raxis.num_bins), raxis.range_m),
-                          model, None, Path(out_dir) / "stap_gmti_frame0.png")
-    return {"look_angle_deg": s.look_angle_deg, "dimension": model.dimension, "methods": res_all}
+        vp = cc.platform_velocity_mps
+        pl.plot_angle_doppler(R_first, model, Path(out_dir) / "angle_doppler_frame0.png", platform_velocity_mps=vp,
+                              title="Angle-Doppler spectrum, frame 0 (swath average)")
+        files.append("angle_doppler_frame0.png")
+        if num_frames > 1:
+            pl.plot_angle_doppler(R_sum / num_frames, model, Path(out_dir) / "angle_doppler_mean.png",
+                                  platform_velocity_mps=vp,
+                                  title=f"Angle-Doppler spectrum, mean of {num_frames} frames (swath average)")
+            files.append("angle_doppler_mean.png")
+        if gmti_first:
+            pl.plot_gmti_maps(gmti_first, range_of, model, None, Path(out_dir) / "stap_gmti_frame0.png")
+            files.append("stap_gmti_frame0.png")
+        if gmti_int and num_frames > 1:
+            pl.plot_gmti_maps(gmti_int, range_of, model, None, Path(out_dir) / "stap_gmti_integrated.png")
+            files.append("stap_gmti_integrated.png")
+    return {
+        "look_angle_deg": angles[0],
+        "look_angles_deg": angles,
+        "dimension": model.dimension,
+        "num_frames": num_frames,
+        "num_test_bins": int(test.size),
+        "test_range_m": [float(range_of(test.min())), float(range_of(test.max()))],
+        "training": {
+            "range_bins": s.num_training,
+            "guard_bins": s.num_guard,
+            "frames_pooled": K,
+            "samples_per_covariance": s.num_training * min(K, num_frames) * (2 if s.forward_backward else 1),
+            "forward_backward": s.forward_backward,
+            "backend": backend_used,
+            "precision": s.precision if backend_used != "numpy" else "double",
+            "censor_db": s.training_censor_db,
+            "mean_censored_bins_per_frame": float(np.mean(censored)) if censored else 0.0,
+        },
+        "methods": res_all,
+        "files": files,
+    }
+
+
+def capture_space_time_model(cc: CaptureConfig, radar: RadarConfig) -> SpaceTimeModel:
+    """Space-time model (virtual positions, TDM offsets, loops, T_slow) from capture settings."""
+    sched = cc.tx_schedule
+    tc = radar.idle_time_s + radar.ramp_end_time_s
+    lam = wavelength_for(radar)
+    scale = lam / 2 if cc.antenna.position_units == "half_wavelength" else 1.0
+    rx = np.asarray(cc.antenna.rx_positions, float) * scale
+    tx = np.asarray(cc.antenna.tx_positions, float) * scale
+    return SpaceTimeModel(virtual_positions(rx, tx, sched), virtual_time_offsets(sched, rx.shape[0], tc),
+                          radar.num_chirps // len(sched), len(sched) * tc, lam)
+
+
+def calibrate_capture(
+    cc: CaptureConfig,
+    input_path: str | Path,
+    reflector_range_m: float,
+    reflector_angle_deg: float = 0.0,
+    search_halfwidth_m: float = 1.0,
+    allow_unverified_format: bool = False,
+    max_frames: int | None = None,
+    min_reflector_snr_db: float = 20.0,
+    max_phase_jitter_deg: float = 5.0,
+) -> dict:
+    """Per-virtual-channel complex calibration from a capture of one dominant static reflector.
+
+    The reflector (corner reflector, static scene) at known range and angle gives, per
+    virtual channel c, the zero-Doppler response x_c at its range bin (mean over loops
+    and frames). The ideal response is the spatial steering a_c(angle); the calibration
+    multiplier is cal_c = a_c / x_c, referenced to channel 0 phase and unit mean gain.
+    Applying ``V * cal`` (what process_capture does) then makes the reflector look ideal.
+
+    If the config already has ``rx_calibration``, the angle measured with it is also
+    reported: use a second capture at a different known angle to verify the calibration
+    and the angle sign (the reported angle must match ``reflector_angle_deg``).
+    """
+    assess = assess_capture_config(cc, allow_unverified_format)
+    if not assess.available("angle"):
+        raise CaptureConfigError("calibration needs the decode/range/doppler/angle settings:\n" + assess.message())
+    cube, _ = load_capture_file(input_path, cc.adc_format, cc.allow_partial_final_frame, max_frames or cc.max_frames)
+    radar = capture_radar_config(cc)
+    proc_cfg = ProcessingConfig(**asdict(cc.processing))
+    Y, raxis = range_fft(cube_to_cpis(cube), radar, proc_cfg)
+    model = capture_space_time_model(cc, radar)
+    valid = range_mask(raxis, proc_cfg.range_min_m, proc_cfg.range_max_m)
+    win = np.abs(raxis.range_m - reflector_range_m) <= search_halfwidth_m
+    if not win.any():
+        raise CaptureConfigError(f"no range bins within {search_halfwidth_m} m of {reflector_range_m} m")
+    # zero-Doppler response per frame, channel, bin: static reflector survives, movers average out
+    X = np.stack([to_virtual_cube(Y[f], cc.tx_schedule).mean(axis=1) for f in range(Y.shape[0])])  # (F, C, R)
+    pw = (np.abs(X) ** 2).mean(axis=(0, 1))
+    cand = np.flatnonzero(win)
+    rb = int(cand[np.argmax(pw[cand])])
+    ref = valid & ~win
+    snr_db = float(10 * np.log10(pw[rb] / np.median(pw[ref]))) if ref.any() else float("nan")
+    xf = X[:, :, rb]  # (F, C)
+    x = xf.mean(axis=0)
+    a = model.spatial(direction_from_angles(reflector_angle_deg))
+    cal = a / x
+    cal = cal / (cal[0] / abs(cal[0]))
+    cal = cal / np.mean(np.abs(cal))
+    rel = xf * np.conj(xf[:, :1])  # phase of each channel relative to channel 0, per frame
+    jitter = np.rad2deg(np.std(np.angle(rel * np.conj(rel.mean(axis=0))[None]), axis=0))
+    warnings = []
+    if not snr_db >= min_reflector_snr_db:
+        warnings.append(f"reflector only {snr_db:.1f} dB above the median bin (< {min_reflector_snr_db} dB): "
+                        "other scatterers bias the calibration")
+    if float(jitter.max()) > max_phase_jitter_deg:
+        warnings.append(f"channel phase varies by up to {jitter.max():.1f} deg across frames "
+                        f"(> {max_phase_jitter_deg}): reflector or radar moved, or SNR too low")
+    edge = abs(float(raxis.range_m[rb]) - reflector_range_m) > 0.9 * search_halfwidth_m
+    if edge:
+        warnings.append("strongest bin is at the edge of the search window: check reflector_range_m")
+    out = {
+        "reflector_range_m_measured": float(raxis.range_m[rb]),
+        "reflector_bin": rb,
+        "reflector_snr_db": snr_db,
+        "reflector_angle_deg_assumed": reflector_angle_deg,
+        "angle_uncalibrated_deg": float(estimate_angle(x, model.positions, model.wavelength)[0]),
+        "phase_offset_deg": [float(v) for v in -np.rad2deg(np.angle(cal))],
+        "gain_offset_db": [float(v) for v in -20 * np.log10(np.abs(cal))],
+        "phase_jitter_deg": [float(v) for v in jitter],
+        "rx_calibration": [[round(float(c.real), 6), round(float(c.imag), 6)] for c in cal],
+        "num_frames": int(Y.shape[0]),
+        "warnings": warnings,
+    }
+    if cc.rx_calibration is not None:
+        cfg_cal = np.array([complex(re, im) for re, im in cc.rx_calibration])
+        if cfg_cal.size == x.size:
+            ang = float(estimate_angle(x * cfg_cal, model.positions, model.wavelength)[0])
+            out["angle_with_config_calibration_deg"] = ang
+            out["angle_error_with_config_calibration_deg"] = ang - reflector_angle_deg
+            if reflector_angle_deg != 0 and np.sign(ang) != np.sign(reflector_angle_deg):
+                warnings.append("angle SIGN is reversed with the config calibration: check antenna positions / "
+                                "mixer_convention before trusting any angle")
+    return out
+
+
+def censor_training_bins(power, valid, num_training, num_guard, censor_db):
+    """Training mask without bins more than ``censor_db`` above their local median power.
+
+    The local reference is the median over the ~num_training nearest valid bins (excluding
+    the bin itself), so the natural fall of clutter power with range is not censored.
+    Censoring is skipped for a frame if it would leave too few bins to train any test bin.
+    Trade-off: strong clutter discretes are censored too, so they are not nulled.
+    """
+    idx = np.flatnonzero(valid)
+    p = np.asarray(power, float)[idx]
+    half = max(num_training // 2, 4)
+    thr = 10.0 ** (censor_db / 10.0)
+    keep = np.ones(idx.size, bool)
+    for i in range(idx.size):
+        lo, hi = max(0, i - half), min(idx.size, i + half + 1)
+        local = np.delete(p[lo:hi], i - lo)
+        if local.size and p[i] > thr * np.median(local):
+            keep[i] = False
+    if keep.sum() < num_training + 2 * num_guard + 1:
+        return valid
+    out = np.zeros_like(np.asarray(valid, bool))
+    out[idx[keep]] = True
+    return out
 
 
 def _plot_adc(cube, cc, path):

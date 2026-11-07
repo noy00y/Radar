@@ -1,0 +1,222 @@
+# ---------------------------------------------------------------------------
+# Hardware capture configuration: TI IWR1843BOOST + DCA1000EVM
+# EXPERIMENT 2: vehicle_highway (side-looking STAP, 50-100 km/h)
+#
+# Roof-mounted, side-looking. Array x-axis along travel, boresight perpendicular.
+# Moving platform -> stationary clutter forms a ridge v_r = -v_p sin(theta).
+#
+# REQUIREMENTS -> DESIGN (lambda = 3.896 mm, fs = 10 Msps complex)
+#   1. Clutter must not wrap at 100 km/h (27.8 m/s):
+#        beta = 4 v_p T_c / lambda <= 1  ->  T_c <= lambda / (4 v_p) = 35 us
+#        chosen T_c = 33.5 us -> v_max = 29.1 m/s (105 km/h)
+#        beta: 0.48 @ 50 km/h, 0.57 @ 60, 0.76 @ 80, 0.96 @ 100   (all <= 1: MET)
+#   2. Range: adjacent lanes, shoulder, barriers, roadside to ~110 m:
+#        S = 11 MHz/us -> R_max = c fs / (2 S) = 136 m (90 % usable ~ 123 m)
+#        beat at 115 m = 8.4 MHz < 10 MHz; at 4 m = 0.29 MHz > 175 kHz HPF
+#   3. Range resolution (from the 33.5 us budget: 24 us of sampling):
+#        B = 11 MHz/us * 24 us = 264 MHz -> 0.57 m   (car = ~8 bins)
+#   4. STAP sample support with full-rank MVDR:
+#        L = 16 chirps -> D = 4 x 16 = 64 -> 2D = 128 training bins
+#        available: 4-115 m at 0.533 m/bin = ~208 bins   (MET)
+#   5. CPI frozen: 16 x 33.5 us = 0.54 ms; at 27.8 m/s the car moves 1.5 cm (MET)
+#
+# REQUIREMENTS THAT CANNOT ALL BE MET (trade-offs taken)
+#   a. Fine Doppler AND full-rank MVDR: Doppler res = lambda / (2 L T_c) = 3.6 m/s at
+#      L = 16. L = 32 halves it (1.8 m/s) but D = 128 needs 256 training bins > 208.
+#      -> Default L = 16 with all methods. Variant now possible: L = 32 (D = 128) with all
+#         methods using training_frames: 3 (128 x 3 = 384 samples > 256); at 50 Hz the scene
+#         shifts ~1 bin per frame, so 3 frames (40 ms) keep the clutter statistics stationary.
+#   b. Oncoming traffic: relative radial speed up to ~55 m/s (200 km/h closing). Needs
+#      T_c <= 17.5 us -> ~9 us of sampling -> ~1.5 m resolution and no time for settling.
+#      -> Not met: oncoming cars WRAP (detected, wrong speed). STAP still separates them
+#         unless the wrapped speed lands on the clutter ridge at the same angle.
+#         Fix later with alternating chirp periods across frames (speed unwrapping).
+#   c. Multiple TX: 2-TX TDM doubles the per-channel period to 67 us -> v_max 14.5 m/s:
+#      clutter wraps (beta 1.9 at 100 km/h). -> TX1 only.
+#   d. Faster than ~105 km/h: clutter starts to wrap at wide angles (beam edges first).
+# ---------------------------------------------------------------------------
+
+# DEFAULT true: same DCA1000/LVDS/ADC format as the verified bench captures; re-check the
+# first capture's decode report (out_of_range_values == 0) before trusting results.
+capture_format_verified: true
+
+adc_format:
+  data_type: complex
+  adc_bits: 16
+  sign_handling: int16_twos_complement
+  byte_order: little
+  iq_order: I_first
+  complex_packing: two_sample_blocks
+  channel_layout: rx_planar_per_chirp
+  num_rx: 4
+  num_adc_samples: 240           # 24 us: longest window inside the 33.5 us chirp period
+  chirps_per_frame: 16           # L = 16 -> D = 64 (variant: 32, see header a.)
+  num_frames: 3000               # 60 s at 20 ms; 184 MB
+
+waveform:
+  mmwave_cfg_file: null
+  carrier_frequency_hz: 77.0e+9
+  chirp_slope_hz_per_s: 11.0078e+12  # 228 x 48.2797 kHz/us (TI slope LSB) = what Studio programs for an
+                                     # 11 MHz/us request -> R_max = 136 m. Replace with Studio's reported value.
+  idle_time_s: 4.0e-6
+  adc_start_time_s: 4.0e-6
+  ramp_end_time_s: 29.5e-6         # ADC ends at 28 us; 1.5 us excess; sweep = 325 MHz
+  adc_sample_rate_hz: 10.0e+6
+  mixer_convention: tx_times_conj_rx   # confirm in experiment 1 first
+
+tx_schedule: [0]                   # TX1 only (header c.)
+
+antenna:
+  verified: true
+  position_units: half_wavelength
+  rx_positions: [[0, 0, 0], [1, 0, 0], [2, 0, 0], [3, 0, 0]]
+  tx_positions: [[0, 0, 0]]        # Tx0 = TX1 on the silkscreen
+
+# DEFAULT null = identity (no correction); kept null so the stage report keeps warning.
+# Measure in the room/parking lot WITH THIS WAVEFORM (scripts/calibrate_capture.py) before driving.
+rx_calibration: null
+# DEFAULT 80 km/h (middle of the 50-100 km/h plan). Used for the predicted clutter ridge and
+# dpca only; adaptive STAP does not need it. Replace per run with the GPS mean speed.
+platform_velocity_mps: [22.2, 0.0, 0.0]
+
+processing:
+  range_window: hann
+  doppler_window: hann
+  range_nfft: 256                  # 0.533 m bins
+  doppler_nfft: 32                 # 2x zero-pad
+  range_min_m: 4.0                 # adjacent lane starts ~2-4 m from the radar
+  range_max_m: 115.0               # < 123 m usable IF limit
+  beat_band: positive
+  remove_dc: true
+
+detection:
+  guard_cells: [4, 0]              # car spans many 0.53 m bins
+  training_cells: [16, 0]          # range-only CFAR (Doppler is non-homogeneous across the ridge)
+  pfa: 1.0e-4
+  range_edge: shrink
+  doppler_edge: wrap
+  range_gate_bins: 4
+  doppler_gate_bins: 2
+  angle_gate_deg: 10.0
+
+stap:
+  enabled: true
+  look_angle_deg: 0.0
+  num_training: 128                # 2 x D (RMB ~3 dB)
+  training_frames: 3               # 384 samples (x2 FB = 768) -> < 1 dB loss; scene moves ~1 bin/frame at 50 Hz
+  forward_backward: true           # single TX + uniform ULA + uniform PRI -> persymmetric clutter
+  # auto = CuPy/CUDA GPU if available, else per-bin CPU reference; single precision on the GPU.
+  # D = 64 here is cheap; the GPU matters for 32-chirp variants and long (3000-frame) drives.
+  backend: auto
+  precision: single
+  gpu_batch_bins: 64
+  # Sweep so movers anywhere in the beam are tested (one covariance per range bin, shared).
+  look_angles_deg: [-45, -30, -15, 0, 15, 30, 45]
+  training_censor_db: 15.0         # keep strong vehicles out of training (self-nulling)
+  num_guard: 4
+  loading_mode: noise_eig_relative
+  loading_value: 1.0
+  num_doppler_hypotheses: 32
+  spatial_taper: rect
+  temporal_taper: hann
+  methods: [nonadaptive, mvdr, efa, pc]   # add dpca only for a run held at its matched speed (see below)
+  dpca_pulse_lag: 1                # DPCA matched speed = (lambda/2) / (2 lag T_c) = 29.1 m/s (105 km/h) for lag 1;
+                                   # lag 2 -> 14.5 m/s (52 km/h): hold that on cruise control for a DPCA run
+  dpca_max_mismatch: 0.25
+  efa_num_bins: 3
+  pc_rank: null
+  exclude_known_targets: false
+  exclusion_halfwidth_bins: 4
+  cfar_guard: 3
+  cfar_training: 16
+  cfar_pfa: 1.0e-3
+  test_range_min_m: 6.0
+  test_range_max_m: 110.0
+
+max_frames: 200                    # default processing subset (4 s); override with --max-frames
+allow_partial_final_frame: false
+notes: >
+  Side-looking highway STAP at 50-100 km/h, TX1 only, D = 64. Clutter ridge stays
+  unwrapped up to ~105 km/h. Oncoming traffic wraps in speed (accepted).
+  Run experiment 1 first to confirm mixer sign, angle sign and calibration.
+
+studio:
+  experiment: vehicle_highway
+
+  scenario:
+    description: "Highway, 50-100 km/h, side-looking, other vehicles as targets"
+    max_scene_range_m: 115.0
+    max_target_speed_mps: 30.0
+    platform_speed_max_mps: 27.8   # 100 km/h
+
+  static_config:
+    tx_enable: [true, false, false]
+    rx_enable: [true, true, true, true]
+    cascading_mode: single_chip
+    rf_ldo_bypass_enable: true
+    pa_ldo_ip_disable: true
+    supply_ir_drop_percent: 0
+    io_supply_v: 3.3
+    lp_adc_mode: regular
+    adc_full_scale_reduction: 0
+    per_chirp_phase_shifter: false
+    freq_limit_ghz: [77.0, 81.0]
+
+  data_path:
+    interface: lvds
+    packet0: adc_only
+    packet1: suppress
+    lane_clock: ddr
+    data_rate_mbps: 600
+    lanes_enabled: [1, 2]
+    msb_first: true
+    crc: false
+
+  profile:
+    id: 0
+    rx_gain_db: 30
+    hpf1_corner_khz: 175
+    hpf2_corner_khz: 350
+
+  chirp:
+    profile_id: 0
+    start_idx: 0
+    end_idx: 0
+    tx_enable: [true, false, false]
+
+  frame:
+    start_chirp: 0
+    end_chirp: 0
+    num_loops: 16
+    period_s: 0.020                # 50 Hz: at 100 km/h the scene shifts 0.56 m (~1 bin) per frame
+    num_frames: 3000
+    trigger_select: software
+    # data rate: 16 x 4 RX x 240 x 4 B = 61 kB/frame -> 3.1 MB/s, trivial
+
+  capture_card:
+    device: DCA1000
+    host_ip: 192.168.33.30
+    fpga_ip: 192.168.33.180
+    fpga_mac: "12:34:56:78:90:12"
+    config_port: 4096
+    data_port: 4098
+    log_mode: raw
+    lvds_lanes: 2
+    transfer: lvds_capture
+    capture: ethernet_stream
+    data_bits: 16
+    packet_delay_us: 25
+    timeout_s: 90
+
+# ---------------------------------------------------------------------------
+# MOUNTING (highway speeds)
+# ---------------------------------------------------------------------------
+# - Do NOT use the 1.5 m pole at 100 km/h: wind load makes it vibrate, which smears the
+#   clutter ridge (and it is a safety risk). Use a rigid roof-rack crossbar mount,
+#   ~0.2-0.3 m above the roof (~1.8 m above the road), in a radar-transparent cover
+#   (calibrate with the cover on).
+# - Array x-axis along travel; platform_velocity +x assumes the RX4 end points FORWARD
+#   (facing the antennas with text upright, RX4 is on the right). Otherwise flip the sign.
+# - Boresight perpendicular to travel, tilted down ~5 deg toward the adjacent lanes.
+# - Log GPS speed (1-10 Hz) alongside the capture for the clutter-ridge check.
+# ---------------------------------------------------------------------------

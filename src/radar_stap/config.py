@@ -178,6 +178,16 @@ class StapConfig:
     cfar_pfa: float = 1e-4
     test_range_min_m: Optional[float] = None
     test_range_max_m: Optional[float] = None
+    # --- hardware captures only (simulation requires the defaults) ---
+    training_frames: int = 1  # consecutive CPIs pooled into each training set (odd); samples = num_training * training_frames
+    training_censor_db: Optional[float] = None  # drop training bins this many dB above the local median power (None = off)
+    dpca_pulse_lag: int = 1  # dpca: slow-time lag (pulses) between displaced channel pairs
+    dpca_max_mismatch: float = 0.25  # dpca: allowed phase-centre mismatch as a fraction of the channel spacing
+    look_angles_deg: Optional[list[float]] = None  # sweep of look angles (None = look_angle_deg only)
+    forward_backward: bool = False  # persymmetric (forward-backward) covariance averaging: ~2x sample support
+    backend: str = "numpy"  # numpy (per-bin reference) | numpy_batched | cupy (GPU) | auto (cupy if available)
+    precision: str = "double"  # batched backends only: double (complex128) | single (complex64, use on GPU)
+    gpu_batch_bins: int = 32  # test bins per batched solve (GPU memory ~ batch x training x D)
 
 
 @dataclass
@@ -636,7 +646,13 @@ def validate_simulation_config(cfg: SimulationConfig) -> None:
         _check(s.num_training % 2 == 0, "stap.num_training must be even (symmetric window)", errors)
         _check(s.efa_num_bins % 2 == 1, "stap.efa_num_bins must be odd", errors)
         known = {"nonadaptive", "mvdr", "efa", "pc"}
-        _check(set(s.methods) <= known, f"stap.methods must be a subset of {sorted(known)}", errors)
+        _check(set(s.methods) <= known,
+               f"stap.methods must be a subset of {sorted(known)} in simulation ('dpca' is capture-only)", errors)
+        _check(s.training_frames == 1, "stap.training_frames > 1 is supported for hardware captures only", errors)
+        _check(s.training_censor_db is None, "stap.training_censor_db is supported for hardware captures only", errors)
+        _check(s.look_angles_deg is None, "stap.look_angles_deg is supported for hardware captures only", errors)
+        _check(not s.forward_backward, "stap.forward_backward is supported for hardware captures only", errors)
+        _check(s.backend == "numpy", "stap.backend other than numpy is supported for hardware captures only", errors)
         if "mvdr" in s.methods and s.num_training < D:
             errors.append(
                 f"stap.num_training={s.num_training} < space-time dimension D={D}: the full-rank "
