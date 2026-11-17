@@ -7,9 +7,9 @@
 local output_dir =
     "C:\\Users\\guest0\\Documents\\Github\\Radar\\outputs"
 
-local capture_count = 1
-local capture_ms = 9000
-local expected_bytes = 8388608
+local capture_count = 3
+local capture_ms = 35000
+local expected_bytes = 29492000
 
 local function file_size(path)
     local f = io.open(path, "rb")
