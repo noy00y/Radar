@@ -1,0 +1,6 @@
+base: radar_capture_vehicle.yaml
+stap:
+  enabled: false
+
+adc_format:
+  num_frames: 64                # ~14 s at 100 ms frame period

@@ -5,11 +5,11 @@
 -- 3-TX TDM: chirps 0, 1, 2; 4 RX; 256 ADC samples.
 
 local output_dir =
-    "C:\\Users\\ozair\\Documents\\Code_Drive\\Drone\\radar\\claude_v1\\bins"
+    "C:\\Users\\guest0\\Documents\\Github\\Radar\\outputs"
 
-local capture_count = 3
-local capture_ms = 70000
-local expected_bytes = 100663296
+local capture_count = 1
+local capture_ms = 9000
+local expected_bytes = 8388608
 
 local function file_size(path)
     local f = io.open(path, "rb")
@@ -24,7 +24,7 @@ end
 
 for i = 1, capture_count do
     local output_path = string.format(
-        "%s\\stap_capture_%03d.bin",
+        "%s\\cal_0deg_%03d.bin",
         output_dir,
         i
     )
@@ -49,13 +49,7 @@ for i = 1, capture_count do
 
     local size = file_size(output_path)
 
-    if size == expected_bytes then
-        WriteToLog(
-            "[STAP] Capture " .. i .. " size matches expected: " ..
-            size .. " bytes\n",
-            "green"
-        )
-    elseif size >= 0 then
+    if size >= 0 then
         WriteToLog(
             "[STAP] Capture " .. i .. " size was " .. size ..
             " bytes; expected " .. expected_bytes .. "\n",

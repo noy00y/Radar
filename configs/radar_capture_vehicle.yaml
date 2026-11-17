@@ -59,7 +59,7 @@ antenna:
   rx_positions: [[0, 0, 0], [1, 0, 0], [2, 0, 0], [3, 0, 0]]
   tx_positions: [[0, 0, 0]]        # only Tx0 used (= TX1 on the board silkscreen; config is 0-based)
 
-rx_calibration: null               # fill after corner-reflector calibration
+rx_calibration: [[0.880005, 0.0], [1.111025, -0.299494], [1.003105, -0.123091], [0.958239, -0.029133]]               # fill after corner-reflector calibration
 platform_velocity_mps: [8.0, 0.0, 0.0]   # ~30 km/h along array x-axis (informational)
 
 processing:

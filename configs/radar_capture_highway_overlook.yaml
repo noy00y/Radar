@@ -81,7 +81,7 @@ antenna:
 # DEFAULT null = identity (no correction). Kept null rather than [[1,0]]x4 so the stage report
 # keeps warning that angles are uncalibrated. Fill from scripts/calibrate_capture.py (room or
 # balcony corner-reflector capture recorded WITH THIS WAVEFORM, reflector >= 8 m away).
-rx_calibration: null
+rx_calibration: [[0.880005, 0.0], [1.111025, -0.299494], [1.003105, -0.123091], [0.958239, -0.029133]]
 platform_velocity_mps: null        # static radar
 
 processing:

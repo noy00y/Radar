@@ -74,7 +74,7 @@ antenna:
 
 # DEFAULT null = identity (no correction); kept null so the stage report keeps warning.
 # Measure in the room/parking lot WITH THIS WAVEFORM (scripts/calibrate_capture.py) before driving.
-rx_calibration: null
+rx_calibration: [[0.880005, 0.0], [1.111025, -0.299494], [1.003105, -0.123091], [0.958239, -0.029133]]
 # DEFAULT 80 km/h (middle of the 50-100 km/h plan). Used for the predicted clutter ridge and
 # dpca only; adaptive STAP does not need it. Replace per run with the GPS mean speed.
 platform_velocity_mps: [22.2, 0.0, 0.0]
