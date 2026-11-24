@@ -5,12 +5,12 @@
 -- One recording per run. Same Studio calls as the hardware-verified version.
 
 local output_dir =
-    "C:\\Users\\guest0\\Documents\\Github\\Radar\\outputs"
+    "C:\\Users\\guest0\\Documents\\Github\\Radar\\outputs\\highway_2"
 
 -- Change these 3 lines before each run:
-local file_name = "overlook_004.bin"  -- new name each run, so nothing is overwritten
-local num_frames = 600                -- = Studio SensorConfig -> Frame -> No of Frames
-local periodicity_ms = 50             -- = Studio SensorConfig -> Frame -> Periodicity
+local file_name = "bin12.bin"  -- new name each run, so nothing is overwritten
+local num_frames = 3000                -- = Studio SensorConfig -> Frame -> No of Frames
+local periodicity_ms = 20             -- = Studio SensorConfig -> Frame -> Periodicity
 
 local output_path = output_dir .. "\\" .. file_name
 local wait_ms = num_frames * periodicity_ms + 5000  -- all frames + 5 s for the data to drain
